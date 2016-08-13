@@ -1,0 +1,32 @@
+﻿<Window x:Class="_2chBrowser.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_2chBrowser"
+        xmlns:lib="clr-namespace:PixelLab.Wpf.Transitions"
+        mc:Ignorable="d"
+        Title="2chブラウザ(仮)" Height="350" Width="525">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Metoro テーマ-->
+                <ResourceDictionary Source="Themes/Metro/Theme.xaml"/>
+
+                <!-- メニュー テーマ -->
+                <ResourceDictionary Source="Themes/Metro/Common.xaml"/>
+
+                <!-- トラジションライブラリ -->
+                <ResourceDictionary Source="bot/TransitionLibrary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+        <!-- メインビュー表示領域-->
+        <Grid Name="gridMain">
+            <lib:TransitionPresenter x:Name="mainViewTrasision">
+                <lib:TransitionPresenter.Content >
+                    <Label />
+                </lib:TransitionPresenter.Content>
+            </lib:TransitionPresenter>
+        </Grid>
+</Window>
