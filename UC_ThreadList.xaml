@@ -28,7 +28,6 @@
 
     <DockPanel>
         <ListBox Name="listThread"
-                 Grid.ColumnSpan="2" 
                  ItemTemplate="{StaticResource listDataFile}"
                  ItemContainerStyle="{StaticResource listStyleDataFile}"/>
     </DockPanel>

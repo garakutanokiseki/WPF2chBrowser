@@ -19,6 +19,7 @@ using System.IO;
 using System.Windows.Interop;
 using System.Runtime.InteropServices;
 using UtilWindowRestore;
+using System.Windows.Media.Animation;
 
 namespace _2chBrowser
 {
@@ -57,6 +58,10 @@ namespace _2chBrowser
         private PixelLab.Wpf.Transitions.Transition[] m_Transition;
         private const int TRASITION_MAX_COUNT = 4;
 
+        //表示スレッド保持
+        Board m_CurrentBoard;
+        Thread m_CurrentThread;
+
         //現在の表示ページ
         CBasePage m_CurrentPage;
 
@@ -87,6 +92,22 @@ namespace _2chBrowser
 
             m_ucMessage = new UC_Message();
             m_ucMessage.m_EventHandler = EventHandler;
+
+            //設定をバインディングする
+            DataContext = Properties.Settings.Default;
+
+            //テーマを読み込む
+            cmbThemes.ItemsSource = WPF.Themes.ThemeManager.GetThemes();
+        }
+
+        private string GetAppDataPath()
+        {
+            string szDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\WPF2chBrowser";
+            if (Directory.Exists(szDir) == false)
+            {
+                Directory.CreateDirectory(szDir);
+            }
+            return szDir;
         }
 
         void LoadConfig()
@@ -100,6 +121,43 @@ namespace _2chBrowser
             Properties.Settings.Default.WindowPlacement = wp;
 
             Properties.Settings.Default.Save();
+        }
+
+        private string GetLogDirectory(Board board)
+        {
+            string szDirectory = GetAppDataPath() + "\\" + board.Category;
+            if (Directory.Exists(szDirectory) == false)
+            {
+                Directory.CreateDirectory(szDirectory);
+            }
+            szDirectory = szDirectory + "\\" + board.Name;
+            if (Directory.Exists(szDirectory) == false)
+            {
+                Directory.CreateDirectory(szDirectory);
+            }
+
+            return szDirectory;
+        }
+
+        double GetFontSize()
+        {
+            double font_size;
+
+            switch (Properties.Settings.Default.font_size)
+            {
+                case 0:
+                    font_size = 18;
+                    break;
+                case 1:
+                    font_size = 16;
+                    break;
+                default:
+                    font_size = 12;
+                    break;
+            }
+
+            return font_size;
+
         }
 
         #region ページ遷移処理
@@ -163,13 +221,24 @@ namespace _2chBrowser
 
         private void OnShowThread(Board board)
         {
-            m_ucThreadList.GetThreadList(board);
-            ChangePage(m_ucThreadList, TrasitionType.Trasition_SlideLeft, Visibility.Visible, Visibility.Visible);
+            //表示ボードを保持する
+            m_CurrentBoard = board;
 
+            //スレッドを取得する
+            m_ucThreadList.GetThreadList(board);
+
+            //TODO:スレッドを保存する
+
+            //ページを表示する
+            ChangePage(m_ucThreadList, TrasitionType.Trasition_SlideLeft, Visibility.Visible, Visibility.Visible);
         }
 
         private void OnShowMessage(Thread thread)
         {
+            //表示スレッドを保持する
+            m_CurrentThread = thread;
+
+            //メッセージをダウンロードする
             string url = m_ucThreadList.m_Board.Url + "dat/" + thread.Number;
 
             HttpWebRequest hwreq = (HttpWebRequest)(HttpWebRequest.Create(url));
@@ -181,8 +250,42 @@ namespace _2chBrowser
                 dat = sr.ReadToEnd();
                 sr.Close();
             }
+
+            //ログを保存する
+            string szFile = GetLogDirectory(m_CurrentBoard) + "\\" + thread.Number.ToString();
+            using (StreamWriter sw = new System.IO.StreamWriter(szFile, false))
+            {
+                sw.Write(dat);
+                sw.Close();
+            }
+
+            //メッセージを表示する
             m_ucMessage.ShowDat(dat);
+
+            //ページを切り替える
             ChangePage(m_ucMessage, TrasitionType.Trasition_SlideLeft, Visibility.Visible, Visibility.Visible);
+        }
+
+        void OnShowAbout()
+        {
+            if (ucAbout.Visibility == System.Windows.Visibility.Collapsed)
+            {
+                //ストーリーボードを停止する
+                Storyboard storyboard = (Storyboard)FindResource("Storyboard_InfoClose");
+                storyboard.Stop();
+                storyboard = (Storyboard)FindResource("Storyboard_InfoOpen");
+                storyboard.Stop();
+
+                //ストリーボードを実行する
+                DoubleAnimation animate = (DoubleAnimation)storyboard.Children[0];
+                animate.From = Width;
+                storyboard.Begin();
+
+                //戻るボタンを表示する
+                btnBack.Visibility = System.Windows.Visibility.Visible;
+                btnBack.IsEnabled = true;
+                btnMenu.Visibility = System.Windows.Visibility.Collapsed;
+            }
         }
         #endregion
 
@@ -221,7 +324,6 @@ namespace _2chBrowser
 
         private void btnBack_Click(object sender, RoutedEventArgs e)
         {
-#if false
             if (ucAbout.Visibility == System.Windows.Visibility.Visible)
             {
                 Storyboard storyboard = (Storyboard)FindResource("Storyboard_InfoOpen");
@@ -237,16 +339,11 @@ namespace _2chBrowser
                 btnMenu.Visibility = Visibility.Visible;
 
                 //メニューの状態を更新する
-                UpdateMenuStatus();
+                //UpdateMenuStatus();
 
                 return;
             }
-            else if (m_CurrentPage == m_ucBmpViewer)
-            {
-                ChangePage(m_ucExplore, TrasitionType.Trasition_SlideLeft, Visibility.Visible, Visibility.Collapsed);
-            }
-#endif
-            if (m_CurrentPage == m_ucThreadList)
+            else if (m_CurrentPage == m_ucThreadList)
             {
                 ChangePage(m_ucBoardList, TrasitionType.Trasition_SlideRight, Visibility.Visible, Visibility.Collapsed);
             }
@@ -255,6 +352,24 @@ namespace _2chBrowser
                 ChangePage(m_ucThreadList, TrasitionType.Trasition_SlideRight, Visibility.Visible, Visibility.Collapsed);
             }
         }
-#endregion
+
+        private void content_menu_MouseLeave(object sender, MouseEventArgs e)
+        {
+            btnMenu.IsChecked = false;
+        }
+
+        private void btnAbout_Click(object sender, RoutedEventArgs e)
+        {
+            OnShowAbout();
+        }
+
+        private void cmbFontSize_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Double font_size = GetFontSize();
+            Resources["fontsize"] = font_size;
+            m_ucBoardList.Resources["fontsize"] = font_size;
+            m_ucThreadList.Resources["fontsize"] = font_size;
+        }
+        #endregion
     }
 }

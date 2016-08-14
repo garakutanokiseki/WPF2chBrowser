@@ -28,7 +28,6 @@
 
     <DockPanel>
         <TreeView Name="listFolder"
-                 Grid.ColumnSpan="2" 
                  ItemTemplate="{StaticResource listDataFile}"
                  ItemContainerStyle="{StaticResource listStyleDataFile}"/>
     </DockPanel>

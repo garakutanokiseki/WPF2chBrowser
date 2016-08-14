@@ -5,6 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:_2chBrowser"
         xmlns:lib="clr-namespace:PixelLab.Wpf.Transitions"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        xmlns:themes="clr-namespace:WPF.Themes"
+        themes:ThemeManager.Theme="{Binding ElementName=cmbThemes, Path=SelectedItem}"
         mc:Ignorable="d"
         Title="2chブラウザ(仮)" Height="350" Width="525"
          Loaded="Window_Loaded" Closing="Window_Closing" SourceInitialized="Window_SourceInitialized">
@@ -20,7 +23,14 @@
                 <!-- トラジションライブラリ -->
                 <ResourceDictionary Source="bot/TransitionLibrary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-        
+
+            <!-- フォントサイズ -->
+            <System:Double x:Key="fontsize">14</System:Double>
+            <System:Double x:Key="label_menu_width">120</System:Double>
+            <System:Double x:Key="combobox_menu_width">160</System:Double>
+            <System:Double x:Key="panel_menu_width">300</System:Double>
+            <System:Double x:Key="panel_menu_width_trans">-320</System:Double>
+
             <!-- コントロールスタイル -->
             <!-- *********************************  ButtonStyle  ********************************* -->
             <Style x:Key="NoneBoraderButtonStyle" TargetType="Button">
@@ -77,8 +87,138 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
+            <!-- *********************************  ListBox Style  ********************************* -->
+            <Style x:Key="NoneBorderListBoxStyle" TargetType="ListBox">
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Background" Value="{StaticResource ListBoxBackgroundBrush}" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                <Setter Property="VerticalContentAlignment" Value="Top" />
+                <Setter Property="IsTabStop" Value="False" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="ItemContainerStyle" Value="{StaticResource ListBoxItemStyle}" />
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBox">
+                            <Grid>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="ValidationStates">
+                                        <VisualState x:Name="Valid" />
+                                        <VisualState x:Name="InvalidUnfocused">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="ValidationErrorElement">
+                                                    <DiscreteObjectKeyFrame KeyTime="0">
+                                                        <DiscreteObjectKeyFrame.Value>
+                                                            <Visibility>Visible</Visibility>
+                                                        </DiscreteObjectKeyFrame.Value>
+                                                    </DiscreteObjectKeyFrame>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="InvalidFocused">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="ValidationErrorElement">
+                                                    <DiscreteObjectKeyFrame KeyTime="0">
+                                                        <DiscreteObjectKeyFrame.Value>
+                                                            <Visibility>Visible</Visibility>
+                                                        </DiscreteObjectKeyFrame.Value>
+                                                    </DiscreteObjectKeyFrame>
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="IsOpen" Storyboard.TargetName="validationTooltip">
+                                                    <DiscreteObjectKeyFrame KeyTime="0">
+                                                        <DiscreteObjectKeyFrame.Value>
+                                                            <System:Boolean>True</System:Boolean>
+                                                        </DiscreteObjectKeyFrame.Value>
+                                                    </DiscreteObjectKeyFrame>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Border BorderThickness="0" Background="{TemplateBinding Background}">
+                                    <ScrollViewer x:Name="ScrollViewer" BorderThickness="0" Padding="{TemplateBinding Padding}" Style="{StaticResource ScrollViewerStyle}">
+                                        <ItemsPresenter />
+                                    </ScrollViewer>
+                                </Border>
+                                <Border x:Name="ValidationErrorElement" BorderBrush="{StaticResource ValidationErrorElement}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2" Visibility="Collapsed">
+                                    <ToolTipService.ToolTip>
+                                        <ToolTip x:Name="validationTooltip" DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}" Placement="Right" PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}" Template="{StaticResource ValidationToolTipTemplate}">
+                                            <ToolTip.Triggers>
+                                                <EventTrigger RoutedEvent="Canvas.Loaded">
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="IsHitTestVisible" Storyboard.TargetName="validationTooltip">
+                                                                <DiscreteObjectKeyFrame KeyTime="0">
+                                                                    <DiscreteObjectKeyFrame.Value>
+                                                                        <System:Boolean>true</System:Boolean>
+                                                                    </DiscreteObjectKeyFrame.Value>
+                                                                </DiscreteObjectKeyFrame>
+                                                            </ObjectAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                            </ToolTip.Triggers>
+                                        </ToolTip>
+                                    </ToolTipService.ToolTip>
+                                    <Grid Background="{StaticResource TransparentBrush}" HorizontalAlignment="Right" Height="10" Margin="0,-4,-4,0" VerticalAlignment="Top" Width="10">
+                                        <Path Data="M 1,0 L6,0 A 2,2 90 0 1 8,2 L8,7 z" Fill="{StaticResource ValidationErrorElement}" Margin="-1,3,0,0" />
+                                        <Path Data="M 0,0 L2,0 L 8,6 L8,8" Fill="{StaticResource LightForegroundBrush}" Margin="-1,3,0,0" />
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- メニューオープン -->
+            <Storyboard x:Key="Storyboard_MenuOpen">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(TranslateTransform.X)" Storyboard.TargetName="content_menu">
+                    <EasingDoubleKeyFrame KeyTime="0" Value="-175"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="-80"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="0"/>
+                </DoubleAnimationUsingKeyFrames>
+            </Storyboard>
+
+            <!-- メニュークローズ -->
+            <Storyboard x:Key="Storyboard_MenuClose">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(TranslateTransform.X)" Storyboard.TargetName="content_menu">
+                    <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="-180"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="{StaticResource panel_menu_width_trans}"/>
+                </DoubleAnimationUsingKeyFrames>
+            </Storyboard>
+
+            <!-- アプリ情報ーオープン -->
+            <Storyboard x:Key="Storyboard_InfoOpen">
+                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(TranslateTransform.X)" Storyboard.TargetName="ucAbout" From="120" To="0" Duration="0:0:0.2"/>
+                <ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="ucAbout" Storyboard.TargetProperty="(UIElement.Visibility)">
+                    <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}"/>
+                </ObjectAnimationUsingKeyFrames>
+            </Storyboard>
+
+            <!-- アプリ情報 クローズ -->
+            <Storyboard x:Key="Storyboard_InfoClose">
+                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(TranslateTransform.X)" Storyboard.TargetName="ucAbout" From="0" To="0" Duration="0:0:0.2"/>
+                <ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="ucAbout" Storyboard.TargetProperty="(UIElement.Visibility)">
+                    <DiscreteObjectKeyFrame KeyTime="00:00:0.2" Value="{x:Static Visibility.Collapsed}"/>
+                </ObjectAnimationUsingKeyFrames>
+            </Storyboard>
         </ResourceDictionary>
     </Window.Resources>
+
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="ToggleButton.Checked" SourceName="btnMenu">
+            <BeginStoryboard Storyboard="{StaticResource Storyboard_MenuOpen}"/>
+        </EventTrigger>
+        <EventTrigger RoutedEvent="ToggleButton.Unchecked" SourceName="btnMenu">
+            <BeginStoryboard Storyboard="{StaticResource Storyboard_MenuClose}"/>
+        </EventTrigger>
+    </Window.Triggers>
 
     <DockPanel Background="{DynamicResource WindowBackgroundBrush}">
         <!-- タイトルバー -->
@@ -133,13 +273,86 @@
             </DockPanel>
         </Grid>
 
-        <!-- メインビュー表示領域-->
-        <Grid Name="gridMain">
-            <lib:TransitionPresenter x:Name="mainViewTrasision">
-                <lib:TransitionPresenter.Content >
-                    <Label />
-                </lib:TransitionPresenter.Content>
-            </lib:TransitionPresenter>
+        <Grid>
+            <!-- メインビュー表示領域-->
+            <Grid Name="gridMain">
+                <lib:TransitionPresenter x:Name="mainViewTrasision">
+                    <lib:TransitionPresenter.Content >
+                        <Label />
+                    </lib:TransitionPresenter.Content>
+                </lib:TransitionPresenter>
+            </Grid>
+
+            <!-- ページメニュー -->
+            <DockPanel Grid.Row="1" 
+                    Name="content_menu"
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Stretch"
+                    MouseLeave="content_menu_MouseLeave"
+                    Background="{DynamicResource WindowBackgroundBrush}">
+                <DockPanel.RenderTransform>
+                    <TransformGroup>
+                        <TranslateTransform X="{StaticResource panel_menu_width_trans}"/>
+                    </TransformGroup>
+                </DockPanel.RenderTransform>
+
+                <DockPanel.Effect>
+                    <DropShadowEffect Color="#FFC1C1C1" />
+                </DockPanel.Effect>
+
+                <!-- メニュー -->
+                <StackPanel DockPanel.Dock="Bottom" Orientation="Vertical" HorizontalAlignment="Left" Background="{DynamicResource BaseBackgroundColor}" Width="{StaticResource panel_menu_width}">
+                    <ListBox Name="listMenu" Style="{StaticResource NoneBorderListBoxStyle}">
+                        <ListBoxItem Name="menuAbout" Selected="btnAbout_Click" >
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                <Image Width="24" Source="images/Message-Information-48.png" />
+                                <TextBlock Text="このソフトについて" VerticalAlignment="Center" FontSize="{DynamicResource fontsize}" Margin="12,0,0,0"/>
+                            </StackPanel>
+                        </ListBoxItem>
+                    </ListBox>
+                </StackPanel>
+
+                <TabControl Width="{StaticResource panel_menu_width}" Background="{DynamicResource WindowBackgroundBrush}">
+                    <TabItem Header="設定" FontSize="{DynamicResource fontsize}" Foreground="{DynamicResource TextBrush}" >
+                        <ListBox>
+                            <ListBoxItem>
+                                <Label Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="外観設定" FontStyle="Italic" FontWeight="Bold" />
+                            </ListBoxItem>
+                            <ListBoxItem>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Width="{StaticResource label_menu_width}" Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="文字のサイズ" />
+                                    <ComboBox Name="cmbFontSize" SelectedIndex="{Binding Path=font_size, Mode=TwoWay}" Width="{StaticResource combobox_menu_width}" FontSize="{DynamicResource fontsize}" SelectionChanged="cmbFontSize_SelectionChanged" >
+                                        <ComboBoxItem Content="大きい" />
+                                        <ComboBoxItem Content="普通" />
+                                        <ComboBoxItem Content="小さい" />
+                                    </ComboBox>
+                                </StackPanel>
+                            </ListBoxItem>
+                            <ListBoxItem>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Width="{StaticResource label_menu_width}" Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="テーマ" />
+                                    <ComboBox Name="cmbThemes" SelectedIndex="{Binding Path=theme, Mode=TwoWay}" Width="{StaticResource combobox_menu_width}" FontSize="{DynamicResource fontsize}" />
+                                </StackPanel>
+                            </ListBoxItem>
+                        </ListBox>
+                    </TabItem>
+                </TabControl>
+            </DockPanel>
+
+            <!-- アプリ情報 -->
+            <local:UC_About x:Name="ucAbout" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                      Grid.Row="1" 
+                      Background="{DynamicResource BaseBackgroundColor}"
+                      Visibility="Collapsed">
+                <local:UC_About.RenderTransform>
+                    <TransformGroup>
+                        <TranslateTransform X="0"/>
+                    </TransformGroup>
+                </local:UC_About.RenderTransform>
+                <local:UC_About.Effect>
+                    <DropShadowEffect Color="#FFC1C1C1" Direction="225" />
+                </local:UC_About.Effect>
+            </local:UC_About>
         </Grid>
     </DockPanel>
 </Window>

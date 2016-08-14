@@ -29,6 +29,7 @@ namespace _2chBrowser
             //Board dat = item.DataContext as Board;
 
             TreeViewItem item = (TreeViewItem)listFolder.SelectedItem;
+            if (item == null) return;
             Board dat = item.DataContext as Board;
 
             Debug.WriteLine(string.Format("UC_BoardList::listFolderItem_MouseDoubleClick Name={0}, Url={1}, Category={2}", dat.Name, dat.Url, dat.Category));
@@ -125,7 +126,7 @@ namespace _2chBrowser
                 if (parent_data.Category == newBoard.Category)
                 {
                     TreeViewItem item = new TreeViewItem();
-                    item.Header = newBoard.Name;
+                    item.Header = newBoard;
                     item.DataContext = newBoard;
                     parent.Items.Add(item);
 
@@ -141,12 +142,12 @@ namespace _2chBrowser
 
                 Board newCategory = new Board() { Category = category, Url = "", Name = category };
 
-                item_category.Header = newCategory.Name;
+                item_category.Header = newCategory;
                 item_category.DataContext = newCategory;
                 listFolder.Items.Add(item_category);
 
                 TreeViewItem item_board = new TreeViewItem();
-                item_board.Header = newBoard.Name;
+                item_board.Header = newBoard;
                 item_board.DataContext = newBoard;
                 item_category.Items.Add(item_board);
             }
