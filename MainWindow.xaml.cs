@@ -53,6 +53,10 @@ namespace _2chBrowser
         private PixelLab.Wpf.Transitions.Transition[] m_Transition;
         private const int TRASITION_MAX_COUNT = 4;
 
+        //現在の表示ページ
+        CBasePage m_CurrentPage;
+
+        //ページ
         UC_BoardList m_ucBoardList;
         UC_ThreadList m_ucThreadList;
         UC_Message m_ucMessage;
@@ -103,7 +107,7 @@ namespace _2chBrowser
             dest.m_ToolbarVisibility = toolbar;
 
             //現在のページを保持する
-            //m_CurrentPage = dest;
+            m_CurrentPage = dest;
 
             //メニューの状態を変更する
             //UpdateMenuStatus();
@@ -148,7 +152,7 @@ namespace _2chBrowser
         private void OnShowThread(Board board)
         {
             m_ucThreadList.GetThreadList(board);
-            ChangePage(m_ucThreadList, TrasitionType.Trasition_SlideRight, Visibility.Visible, Visibility.Visible);
+            ChangePage(m_ucThreadList, TrasitionType.Trasition_SlideLeft, Visibility.Visible, Visibility.Visible);
 
         }
 
@@ -166,8 +170,47 @@ namespace _2chBrowser
                 sr.Close();
             }
             m_ucMessage.ShowDat(dat);
-            ChangePage(m_ucMessage, TrasitionType.Trasition_SlideRight, Visibility.Visible, Visibility.Visible);
+            ChangePage(m_ucMessage, TrasitionType.Trasition_SlideLeft, Visibility.Visible, Visibility.Visible);
         }
         #endregion
+
+        #region イベンドハンドラ
+        private void btnBack_Click(object sender, RoutedEventArgs e)
+        {
+#if false
+            if (ucAbout.Visibility == System.Windows.Visibility.Visible)
+            {
+                Storyboard storyboard = (Storyboard)FindResource("Storyboard_InfoOpen");
+                storyboard.Stop();
+
+                storyboard = (Storyboard)FindResource("Storyboard_InfoClose");
+                DoubleAnimation animate = (DoubleAnimation)storyboard.Children[0];
+                animate.To = Width;
+                storyboard.Begin();
+
+                //各ボタンの状態を元に戻す
+                btnBack.Visibility = m_CurrentPage.m_ButtonHomeVisibility;
+                btnMenu.Visibility = Visibility.Visible;
+
+                //メニューの状態を更新する
+                UpdateMenuStatus();
+
+                return;
+            }
+            else if (m_CurrentPage == m_ucBmpViewer)
+            {
+                ChangePage(m_ucExplore, TrasitionType.Trasition_SlideLeft, Visibility.Visible, Visibility.Collapsed);
+            }
+#endif
+            if (m_CurrentPage == m_ucThreadList)
+            {
+                ChangePage(m_ucBoardList, TrasitionType.Trasition_SlideRight, Visibility.Visible, Visibility.Collapsed);
+            }
+            else if (m_CurrentPage == m_ucMessage)
+            {
+                ChangePage(m_ucThreadList, TrasitionType.Trasition_SlideRight, Visibility.Visible, Visibility.Collapsed);
+            }
+        }
+#endregion
     }
 }
