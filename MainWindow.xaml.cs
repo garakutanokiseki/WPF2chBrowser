@@ -16,6 +16,10 @@ using PixelLab.Wpf.Transitions;
 using System.Net;
 using System.IO;
 
+using System.Windows.Interop;
+using System.Runtime.InteropServices;
+using UtilWindowRestore;
+
 namespace _2chBrowser
 {
     /// <summary>
@@ -83,11 +87,19 @@ namespace _2chBrowser
 
             m_ucMessage = new UC_Message();
             m_ucMessage.m_EventHandler = EventHandler;
+        }
 
-            m_ucBoardList.LoadBoardList("https://2ch.sc/bbsmenu.html");
+        void LoadConfig()
+        {
+        }
 
-            //gridMain.Children.Add(m_ucBoardList);
-            ChangePage(m_ucBoardList, TrasitionType.Trasition_None, Visibility.Visible, Visibility.Collapsed);
+        void SaveConfig()
+        {
+            //ウインドウの位置を保存する
+            WINDOWPLACEMENT wp = CUtilWindowRestore.Get(this);
+            Properties.Settings.Default.WindowPlacement = wp;
+
+            Properties.Settings.Default.Save();
         }
 
         #region ページ遷移処理
@@ -175,6 +187,38 @@ namespace _2chBrowser
         #endregion
 
         #region イベンドハンドラ
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            LoadConfig();
+
+            m_ucBoardList.LoadBoardList("https://2ch.sc/bbsmenu.html");
+
+            ChangePage(m_ucBoardList, TrasitionType.Trasition_None, Visibility.Visible, Visibility.Collapsed);
+        }
+        
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            SaveConfig();
+        }
+
+        private void Window_SourceInitialized(object sender, EventArgs e)
+        {
+            try
+            {
+                //ウインドウの位置を復元する
+                WINDOWPLACEMENT wp = (WINDOWPLACEMENT)Properties.Settings.Default.WindowPlacement;
+                if (wp.length > 0)
+                {
+                    wp.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
+                    wp.flags = 0;
+                    wp.showCmd = (wp.showCmd == CUtilWindowRestore.SW_SHOWMINIMIZED ? CUtilWindowRestore.SW_SHOWNORMAL : wp.showCmd);
+                    CUtilWindowRestore.Set(this, wp);
+                }
+            }
+
+            catch { }
+        }
+
         private void btnBack_Click(object sender, RoutedEventArgs e)
         {
 #if false

@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:_2chBrowser"
         xmlns:lib="clr-namespace:PixelLab.Wpf.Transitions"
         mc:Ignorable="d"
-        Title="2chブラウザ(仮)" Height="350" Width="525">
+        Title="2chブラウザ(仮)" Height="350" Width="525"
+         Loaded="Window_Loaded" Closing="Window_Closing" SourceInitialized="Window_SourceInitialized">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

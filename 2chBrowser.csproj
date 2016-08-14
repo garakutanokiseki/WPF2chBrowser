@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="10.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,11 +9,12 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>_2chBrowser</RootNamespace>
     <AssemblyName>2chBrowser</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -37,12 +38,12 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
@@ -77,6 +78,7 @@
     <Compile Include="bot\Transitions\TwoWayTransitionSelector.cs" />
     <Compile Include="bot\WrapperElement.cs" />
     <Compile Include="CBasePage.cs" />
+    <Compile Include="CUtilWindowRestore.cs" />
     <Compile Include="Themes\ThemeManager.cs" />
     <Compile Include="Thread.cs" />
     <Compile Include="UC_BoardList.xaml.cs">
@@ -183,7 +185,9 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="bot\star.png" />
@@ -192,6 +196,16 @@
     <Resource Include="images\Left-Arrow-48.png" />
     <Resource Include="images\Menu-48.png" />
     <Resource Include="images\Message-Information-48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="CsharpSqlite\Community.CsharpSqlite.SQLiteClient\Community.CsharpSqlite.SQLiteClient.csproj">
+      <Project>{7BC68E61-C64C-488C-975F-1E2248383B80}</Project>
+      <Name>Community.CsharpSqlite.SQLiteClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="CsharpSqlite\Community.CsharpSqlite\Community.CsharpSqlite.csproj">
+      <Project>{F1653F20-D47D-4F29-8C55-3C835542AF5F}</Project>
+      <Name>Community.CsharpSqlite</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
