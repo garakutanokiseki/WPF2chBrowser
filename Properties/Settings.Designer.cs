@@ -69,5 +69,65 @@ namespace _2chBrowser.Properties {
                 this["theme"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NarrowingWord0 {
+            get {
+                return ((string)(this["NarrowingWord0"]));
+            }
+            set {
+                this["NarrowingWord0"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NarrowingWord1 {
+            get {
+                return ((string)(this["NarrowingWord1"]));
+            }
+            set {
+                this["NarrowingWord1"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NarrowingWord2 {
+            get {
+                return ((string)(this["NarrowingWord2"]));
+            }
+            set {
+                this["NarrowingWord2"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NarrowingWord3 {
+            get {
+                return ((string)(this["NarrowingWord3"]));
+            }
+            set {
+                this["NarrowingWord3"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NarrowingWord4 {
+            get {
+                return ((string)(this["NarrowingWord4"]));
+            }
+            set {
+                this["NarrowingWord4"] = value;
+            }
+        }
     }
 }

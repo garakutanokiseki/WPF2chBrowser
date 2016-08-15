@@ -6,5 +6,6 @@
         public override string ToString() {
             return Title;
         }
+        public bool visible { set; get; }
     }
 }

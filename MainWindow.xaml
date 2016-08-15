@@ -270,6 +270,11 @@
                         <Image Width="24" Source="images/Left-Arrow-48.png"/>
                     </StackPanel>
                 </Button>
+                <Button Name="btnUpdate" Style="{StaticResource NoneBoraderButtonStyle}" DockPanel.Dock="Left" Margin="2" Click="btnUpdate_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Width="24" Source="images/Command-Refresh-32.png"/>
+                    </StackPanel>
+                </Button>
             </DockPanel>
         </Grid>
 

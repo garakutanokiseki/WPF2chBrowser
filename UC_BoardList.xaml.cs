@@ -41,6 +41,8 @@ namespace _2chBrowser
 
         public void LoadBoardList(string url)
         {
+            listFolder.Items.Clear();
+
             WebRequest wr = WebRequest.Create(url);
             WebResponse ws = wr.GetResponse();
             string boardListHtml;

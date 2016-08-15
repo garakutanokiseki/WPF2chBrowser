@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using PixelLab.Wpf.Transitions;
 using System.Net;
 using System.IO;
+using System.Diagnostics;
 
 using System.Windows.Interop;
 using System.Runtime.InteropServices;
@@ -112,10 +113,35 @@ namespace _2chBrowser
 
         void LoadConfig()
         {
+            //検索履歴を読み込む(スレッド)
+            if (Properties.Settings.Default.NarrowingWord0 != "")
+                m_ucThreadList.cmdNarrowingWord.Items.Add(Properties.Settings.Default.NarrowingWord0);
+            if (Properties.Settings.Default.NarrowingWord1 != "")
+                m_ucThreadList.cmdNarrowingWord.Items.Add(Properties.Settings.Default.NarrowingWord1);
+            if (Properties.Settings.Default.NarrowingWord2 != "")
+                m_ucThreadList.cmdNarrowingWord.Items.Add(Properties.Settings.Default.NarrowingWord2);
+            if (Properties.Settings.Default.NarrowingWord3 != "")
+                m_ucThreadList.cmdNarrowingWord.Items.Add(Properties.Settings.Default.NarrowingWord3);
+            if (Properties.Settings.Default.NarrowingWord4 != "")
+                m_ucThreadList.cmdNarrowingWord.Items.Add(Properties.Settings.Default.NarrowingWord4);
         }
 
         void SaveConfig()
         {
+            //履歴を保存する(スレッド)
+            try
+            {
+                Properties.Settings.Default.NarrowingWord0 = (string)m_ucThreadList.cmdNarrowingWord.Items[0];
+                Properties.Settings.Default.NarrowingWord1 = (string)m_ucThreadList.cmdNarrowingWord.Items[1];
+                Properties.Settings.Default.NarrowingWord2 = (string)m_ucThreadList.cmdNarrowingWord.Items[2];
+                Properties.Settings.Default.NarrowingWord3 = (string)m_ucThreadList.cmdNarrowingWord.Items[3];
+                Properties.Settings.Default.NarrowingWord4 = (string)m_ucThreadList.cmdNarrowingWord.Items[4];
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("SaveSetting : Error => " + ex.Message);
+            }
+
             //ウインドウの位置を保存する
             WINDOWPLACEMENT wp = CUtilWindowRestore.Get(this);
             Properties.Settings.Default.WindowPlacement = wp;
@@ -221,31 +247,43 @@ namespace _2chBrowser
 
         private void OnShowThread(Board board)
         {
-            //表示ボードを保持する
-            m_CurrentBoard = board;
-
-            WebRequest wr = WebRequest.Create(board.Url + "subject.txt");
-            WebResponse ws = wr.GetResponse();
-            string threadListText;
-            using (StreamReader sr = new StreamReader(ws.GetResponseStream(), Encoding.GetEncoding("Shift-Jis")))
+            try
             {
-                threadListText = sr.ReadToEnd();
-                sr.Close();
+                //表示ボードを保持する
+                m_CurrentBoard = board;
+
+                WebRequest wr = WebRequest.Create(board.Url + "subject.txt");
+                WebResponse ws = wr.GetResponse();
+                string threadListText;
+                using (StreamReader sr = new StreamReader(ws.GetResponseStream(), Encoding.GetEncoding("Shift-Jis")))
+                {
+                    threadListText = sr.ReadToEnd();
+                    sr.Close();
+                }
+
+                //スレッドを取得する
+                if (m_ucThreadList.SetThreadList(threadListText) == false)
+                {
+                    throw new Exception("Can' read thread");
+                }
+
+                //スレッドを保存する
+                string szFile = GetLogDirectory(m_CurrentBoard) + "\\subject.txt";
+                using (StreamWriter sw = new System.IO.StreamWriter(szFile, false))
+                {
+                    sw.Write(threadListText);
+                    sw.Close();
+                }
+
+                //ページを表示する
+                ChangePage(m_ucThreadList, TrasitionType.Trasition_SlideLeft, Visibility.Visible, Visibility.Visible);
             }
 
-            //スレッドを取得する
-            m_ucThreadList.GetThreadList(threadListText);
-
-            //スレッドを保存する
-            string szFile = GetLogDirectory(m_CurrentBoard) + "\\subject.txt";
-            using (StreamWriter sw = new System.IO.StreamWriter(szFile, false))
+            catch (Exception ex)
             {
-                sw.Write(threadListText);
-                sw.Close();
+                Debug.WriteLine("OnShowThread : [Error]" + ex.Message);
+                MessageBox.Show(this, "スレッドの取得に失敗しました。");
             }
-
-            //ページを表示する
-            ChangePage(m_ucThreadList, TrasitionType.Trasition_SlideLeft, Visibility.Visible, Visibility.Visible);
         }
 
         private void OnShowMessage(Thread thread)
@@ -367,6 +405,23 @@ namespace _2chBrowser
                 ChangePage(m_ucThreadList, TrasitionType.Trasition_SlideRight, Visibility.Visible, Visibility.Collapsed);
             }
         }
+
+        private void btnUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            if(m_CurrentPage == m_ucBoardList)
+            {
+                m_ucBoardList.LoadBoardList(Properties.Settings.Default.bbs_menu_url);
+            }
+            else if (m_CurrentPage == m_ucThreadList)
+            {
+
+            }
+            else if (m_CurrentPage == m_ucMessage)
+            {
+
+            }
+        }
+
 
         private void content_menu_MouseLeave(object sender, MouseEventArgs e)
         {
