@@ -128,6 +128,7 @@ namespace _2chBrowser
                     TreeViewItem item = new TreeViewItem();
                     item.Header = newBoard;
                     item.DataContext = newBoard;
+                    item.FontSize = (double)Resources["fontsize"];
                     parent.Items.Add(item);
 
                     isExistCategory = true;
@@ -144,11 +145,13 @@ namespace _2chBrowser
 
                 item_category.Header = newCategory;
                 item_category.DataContext = newCategory;
+                item_category.FontSize = (double)Resources["fontsize"];
                 listFolder.Items.Add(item_category);
 
                 TreeViewItem item_board = new TreeViewItem();
                 item_board.Header = newBoard;
                 item_board.DataContext = newBoard;
+                item_board.FontSize = (double)Resources["fontsize"];
                 item_category.Items.Add(item_board);
             }
         }

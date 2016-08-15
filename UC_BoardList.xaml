@@ -18,18 +18,83 @@
                 <TextBlock Margin="32,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Path=Name}" FontSize="{DynamicResource fontsize}"/>
             </Grid>
         </DataTemplate>
-
-        <!-- リストボックス-スタイル -->
-        <Style x:Key="listStyleDataFile" TargetType="TreeViewItem">
-            <EventSetter Event="MouseDoubleClick" Handler="listFolderItem_MouseDoubleClick"/>
-        </Style>
-        
     </UserControl.Resources>
 
     <DockPanel>
-        <TreeView Name="listFolder"
-                 ItemTemplate="{StaticResource listDataFile}"
-                 ItemContainerStyle="{StaticResource listStyleDataFile}"/>
+        <TreeView Name="listFolder">
+            <TreeView.Resources>
+                
+                <Style TargetType="{x:Type TreeView}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type TreeView}">
+                                <Grid>
+                                    <Border x:Name="Border" Background="{DynamicResource BaseBackgroundColor}" BorderBrush="{x:Null}" BorderThickness="0">
+                                        <ScrollViewer Style="{DynamicResource NuclearScrollViewer}" 
+                                        Focusable="False" Padding="4" 
+                                        HorizontalScrollBarVisibility="Disabled"
+                                        VerticalScrollBarVisibility="Auto" 
+                                        CanContentScroll="False" 
+                                        Foreground="{DynamicResource {x:Static SystemColors.ActiveCaptionTextBrushKey}}">
+                                            <ItemsPresenter />
+                                        </ScrollViewer>
+                                    </Border>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+
+                <Style TargetType="{x:Type TreeViewItem}">
+		            <EventSetter Event="MouseDoubleClick" Handler="listFolderItem_MouseDoubleClick"/>
+                    <Setter Property="HeaderTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Name="icon" Width="20" Height="20" />
+                                    <TextBlock Name="text" Text="{Binding Path=Name}" FontSize="{DynamicResource fontsize}" />
+                                </StackPanel>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type TreeViewItem}},Path=IsExpanded}" Value="True">
+                                        <Setter TargetName="icon" Property="Image.Source" Value="images\folder_Open_32xMD.png" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type TreeViewItem}},Path=IsExpanded}" Value="False">
+                                        <Setter TargetName="icon" Property="Image.Source" Value="images\folder_Closed_32xLG.png" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type TreeViewItem}},Path=Items.Count}" Value="0">
+                                        <Setter TargetName="icon" Property="Image.Source" Value="images\Textfile_818_32x.png" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type TreeViewItem}},Path=IsSelectionActive}" Value="True">
+                                        <Setter TargetName="text" Property="TextBlock.Foreground" Value="{DynamicResource TextBrush}" />
+                                    </DataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type TreeViewItem}},Path=IsSelected}" Value="True"/>
+                                            <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type TreeViewItem}},Path=IsSelectionActive}" Value="False"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter TargetName="text" Property="TextBlock.Foreground" Value="{DynamicResource TextBrush}" />
+                                    </MultiDataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type TreeViewItem}},Path=IsSelected}" Value="True"/>
+                                            <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type TreeViewItem}},Path=IsSelectionActive}" Value="True"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter TargetName="text" Property="TextBlock.Foreground" Value="Black" />
+                                    </MultiDataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type TreeViewItem}},Path=IsSelected}" Value="False"/>
+                                            <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type TreeViewItem}},Path=IsSelectionActive}" Value="False"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter TargetName="text" Property="TextBlock.Foreground" Value="{DynamicResource TextBrush}" />
+                                    </MultiDataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TreeView.Resources>
+        </TreeView>
     </DockPanel>
 
 </local:CBasePage>
