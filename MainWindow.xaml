@@ -316,6 +316,15 @@
                     <TabItem Header="設定" FontSize="{DynamicResource fontsize}" Foreground="{DynamicResource TextBrush}" >
                         <ListBox>
                             <ListBoxItem>
+                                <Label Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="板設定" FontStyle="Italic" FontWeight="Bold" />
+                            </ListBoxItem>
+                            <ListBoxItem>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Width="{StaticResource label_menu_width}" Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="メニューURL" />
+                                    <TextBox Name="textMenuUrl" Text="{Binding Path=bbs_menu_url, Mode=TwoWay}" Width="{StaticResource combobox_menu_width}" FontSize="{DynamicResource fontsize}"/>
+                                </StackPanel>
+                            </ListBoxItem>
+                            <ListBoxItem>
                                 <Label Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="外観設定" FontStyle="Italic" FontWeight="Bold" />
                             </ListBoxItem>
                             <ListBoxItem>

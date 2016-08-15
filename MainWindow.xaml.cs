@@ -224,10 +224,25 @@ namespace _2chBrowser
             //表示ボードを保持する
             m_CurrentBoard = board;
 
-            //スレッドを取得する
-            m_ucThreadList.GetThreadList(board);
+            WebRequest wr = WebRequest.Create(board.Url + "subject.txt");
+            WebResponse ws = wr.GetResponse();
+            string threadListText;
+            using (StreamReader sr = new StreamReader(ws.GetResponseStream(), Encoding.GetEncoding("Shift-Jis")))
+            {
+                threadListText = sr.ReadToEnd();
+                sr.Close();
+            }
 
-            //TODO:スレッドを保存する
+            //スレッドを取得する
+            m_ucThreadList.GetThreadList(threadListText);
+
+            //スレッドを保存する
+            string szFile = GetLogDirectory(m_CurrentBoard) + "\\subject.txt";
+            using (StreamWriter sw = new System.IO.StreamWriter(szFile, false))
+            {
+                sw.Write(threadListText);
+                sw.Close();
+            }
 
             //ページを表示する
             ChangePage(m_ucThreadList, TrasitionType.Trasition_SlideLeft, Visibility.Visible, Visibility.Visible);
@@ -239,7 +254,7 @@ namespace _2chBrowser
             m_CurrentThread = thread;
 
             //メッセージをダウンロードする
-            string url = m_ucThreadList.m_Board.Url + "dat/" + thread.Number;
+            string url = m_CurrentBoard.Url + "dat/" + thread.Number;
 
             HttpWebRequest hwreq = (HttpWebRequest)(HttpWebRequest.Create(url));
             hwreq.UserAgent = "Monazilla";
@@ -294,7 +309,7 @@ namespace _2chBrowser
         {
             LoadConfig();
 
-            m_ucBoardList.LoadBoardList("https://2ch.sc/bbsmenu.html");
+            m_ucBoardList.LoadBoardList(Properties.Settings.Default.bbs_menu_url);
 
             ChangePage(m_ucBoardList, TrasitionType.Trasition_None, Visibility.Visible, Visibility.Collapsed);
         }

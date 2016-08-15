@@ -22,8 +22,6 @@ namespace _2chBrowser
     /// </summary>
     public partial class UC_ThreadList : CBasePage
     {
-        public Board m_Board { set; get; }
-
         public UC_ThreadList()
         {
             InitializeComponent();
@@ -35,20 +33,11 @@ namespace _2chBrowser
             m_EventHandler(MainWindow.EventID.ShowMessage, dat);
         }
 
-        public void GetThreadList(Board board)
+        public void GetThreadList(string threadlist)
         {
-            this.m_Board = board;
             listThread.Items.Clear();
-            WebRequest wr = WebRequest.Create(board.Url + "subject.txt");
-            WebResponse ws = wr.GetResponse();
-            string threadListText;
-            using (StreamReader sr = new StreamReader(ws.GetResponseStream(), Encoding.GetEncoding("Shift-Jis")))
-            {
-                threadListText = sr.ReadToEnd();
-                sr.Close();
-            }
 
-            foreach (string row in threadListText.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (string row in threadlist.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 string[] tmp = row.Split(new string[] { "<>" }, StringSplitOptions.RemoveEmptyEntries);
                 listThread.Items.Add(new Thread() { Number = tmp[0], Title = tmp[1] });
