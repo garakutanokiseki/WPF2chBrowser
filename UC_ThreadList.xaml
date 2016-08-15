@@ -12,15 +12,21 @@
         <!-- フォントサイズ -->
         <sys:Double x:Key="fontsize">14</sys:Double>
 
+        <!--  コンバーター  -->
+        <local:VisibleColorConverter x:Key="visibleColorConverter" />
+
         <!-- リストボックス-ファイルリスト -->
         <DataTemplate x:Key="listDataFile">
             <Grid>
-                <TextBlock Margin="32,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Path=Title}" FontSize="{DynamicResource fontsize}"/>
+                <Border Background="{Binding Path=visible, Converter={StaticResource visibleColorConverter}}">
+                    <TextBlock Margin="32,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Path=Title}" FontSize="{DynamicResource fontsize}"/>
+                </Border>
             </Grid>
         </DataTemplate>
 
         <!-- リストボックス-スタイル -->
         <Style x:Key="listStyleDataFile" TargetType="ListBoxItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <EventSetter Event="MouseDoubleClick" Handler="listFolderItem_MouseDoubleClick"/>
         </Style>
 

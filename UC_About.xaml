@@ -8,7 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="600" Loaded="UserControl_Loaded">
     <Grid Background="{DynamicResource WindowBackgroundBrush}">
-        <TextBlock Foreground="{DynamicResource TextBrush}" HorizontalAlignment="Left" Margin="12,12,0,0" VerticalAlignment="Top" Width="354" FontSize="16" FontWeight="Bold" Text="2ch ブラウザ(仮)" />
+        <TextBlock Foreground="{DynamicResource TextBrush}" HorizontalAlignment="Left" Margin="12,12,0,0" VerticalAlignment="Top" Width="354" FontSize="16" FontWeight="Bold" Text="2chライク掲示板 ブラウザ(仮)" />
         <TextBlock Foreground="{DynamicResource TextBrush}" HorizontalAlignment="Left" Margin="180,36,0,0" Name="textVersion" Text="Ver.1.0.0.0" VerticalAlignment="Top" TextAlignment="Right" />
         <TextBlock Foreground="{DynamicResource TextBrush}" HorizontalAlignment="Left" Margin="12,64,0,0" VerticalAlignment="Top" Width="354" Text="Copyright (C) 2016 garakuta" />
 

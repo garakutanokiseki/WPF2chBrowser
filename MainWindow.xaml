@@ -9,7 +9,7 @@
         xmlns:themes="clr-namespace:WPF.Themes"
         themes:ThemeManager.Theme="{Binding ElementName=cmbThemes, Path=SelectedItem}"
         mc:Ignorable="d"
-        Title="2chブラウザ(仮)" Height="350" Width="525"
+        Title="2chライク掲示板 ブラウザ(仮)" Height="350" Width="525"
          Loaded="Window_Loaded" Closing="Window_Closing" SourceInitialized="Window_SourceInitialized">
     <Window.Resources>
         <ResourceDictionary>

@@ -82,6 +82,7 @@
     <Compile Include="bot\WrapperElement.cs" />
     <Compile Include="CBasePage.cs" />
     <Compile Include="CUtilWindowRestore.cs" />
+    <Compile Include="CValueConverter.cs" />
     <Compile Include="Themes\ThemeManager.cs" />
     <Compile Include="Thread.cs" />
     <Compile Include="UC_About.xaml.cs">
