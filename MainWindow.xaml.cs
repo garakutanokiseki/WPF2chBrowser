@@ -215,6 +215,10 @@ namespace _2chBrowser
 
         private bool OnTransitionCompleted(Object sender)
         {
+            if (m_CurrentPage == m_ucThreadList && m_ucThreadList.listThread.SelectedItem != null)
+            {
+                m_ucThreadList.listThread.ScrollIntoView(m_ucThreadList.listThread.SelectedItem);
+            }
             return true;
         }
         #endregion
@@ -251,6 +255,9 @@ namespace _2chBrowser
             {
                 //表示ボードを保持する
                 m_CurrentBoard = board;
+
+                Properties.Settings.Default.selected_board_category = board.Category;
+                Properties.Settings.Default.selected_board_name = board.Name;
 
                 WebRequest wr = WebRequest.Create(board.Url + "subject.txt");
                 WebResponse ws = wr.GetResponse();
@@ -350,8 +357,12 @@ namespace _2chBrowser
             m_ucBoardList.LoadBoardList(Properties.Settings.Default.bbs_menu_url);
 
             ChangePage(m_ucBoardList, TrasitionType.Trasition_None, Visibility.Visible, Visibility.Collapsed);
+
+            m_ucBoardList.SetSelectedBoard(
+                Properties.Settings.Default.selected_board_category,
+                Properties.Settings.Default.selected_board_name);
         }
-        
+
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             SaveConfig();
@@ -399,6 +410,10 @@ namespace _2chBrowser
             else if (m_CurrentPage == m_ucThreadList)
             {
                 ChangePage(m_ucBoardList, TrasitionType.Trasition_SlideRight, Visibility.Visible, Visibility.Collapsed);
+
+                m_ucBoardList.SetSelectedBoard(
+                    Properties.Settings.Default.selected_board_category,
+                    Properties.Settings.Default.selected_board_name);
             }
             else if (m_CurrentPage == m_ucMessage)
             {

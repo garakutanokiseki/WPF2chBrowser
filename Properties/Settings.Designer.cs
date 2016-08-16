@@ -129,5 +129,29 @@ namespace _2chBrowser.Properties {
                 this["NarrowingWord4"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string selected_board_category {
+            get {
+                return ((string)(this["selected_board_category"]));
+            }
+            set {
+                this["selected_board_category"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string selected_board_name {
+            get {
+                return ((string)(this["selected_board_name"]));
+            }
+            set {
+                this["selected_board_name"] = value;
+            }
+        }
     }
 }

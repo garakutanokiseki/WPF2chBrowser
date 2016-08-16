@@ -148,6 +148,7 @@ namespace _2chBrowser
                 item_category.Header = newCategory;
                 item_category.DataContext = newCategory;
                 item_category.FontSize = (double)Resources["fontsize"];
+                item_category.IsExpanded = true;
                 listFolder.Items.Add(item_category);
 
                 TreeViewItem item_board = new TreeViewItem();
@@ -155,6 +156,32 @@ namespace _2chBrowser
                 item_board.DataContext = newBoard;
                 item_board.FontSize = (double)Resources["fontsize"];
                 item_category.Items.Add(item_board);
+            }
+        }
+
+        public void SetSelectedBoard(string category, string name)
+        {
+            bool is_found = false;
+            foreach (TreeViewItem item in listFolder.Items)
+            {
+                Board data = (Board)item.DataContext;
+                if (data.Category != category || item.Items.Count <= 0) continue;
+
+                foreach (TreeViewItem item_sub in item.Items)
+                {
+                    Board data_sub = (Board)item_sub.DataContext;
+                    if (data_sub.Name == name)
+                    {
+                        item_sub.IsSelected = true;
+                        item_sub.BringIntoView();
+                        is_found = true;
+                        break;
+                    }
+                }
+                if (is_found == true)
+                {
+                    break;
+                }
             }
         }
     }
