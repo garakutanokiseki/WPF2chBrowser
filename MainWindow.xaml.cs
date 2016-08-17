@@ -71,6 +71,8 @@ namespace _2chBrowser
         UC_ThreadList m_ucThreadList;
         UC_Message m_ucMessage;
 
+        double m_Borad_VerticalOffset = 0;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -124,6 +126,13 @@ namespace _2chBrowser
                 m_ucThreadList.cmdNarrowingWord.Items.Add(Properties.Settings.Default.NarrowingWord3);
             if (Properties.Settings.Default.NarrowingWord4 != "")
                 m_ucThreadList.cmdNarrowingWord.Items.Add(Properties.Settings.Default.NarrowingWord4);
+
+            //板一覧を読み込む
+            if(m_ucBoardList.LoadBoardfromFile(GetAppDataPath() + "boardlist.xml") == false)
+            {
+                //ファイルが無い場合は、指定URLから読み込む
+                m_ucBoardList.LoadBoardList(Properties.Settings.Default.bbs_menu_url);
+            }
         }
 
         void SaveConfig()
@@ -141,6 +150,9 @@ namespace _2chBrowser
             {
                 Debug.WriteLine("SaveSetting : Error => " + ex.Message);
             }
+
+            //板一覧を保存する
+            m_ucBoardList.SaveBoard(GetAppDataPath() + "boardlist.xml");
 
             //ウインドウの位置を保存する
             WINDOWPLACEMENT wp = CUtilWindowRestore.Get(this);
@@ -186,11 +198,48 @@ namespace _2chBrowser
 
         }
 
+        private ScrollViewer GetScrollViewer(UIElement uiParent)
+        {
+            int nCount = VisualTreeHelper.GetChildrenCount(uiParent);
+
+            try
+            {
+                for (int i = 0; i < nCount; ++i)
+                {
+                    UIElement uielement = VisualTreeHelper.GetChild(uiParent, i) as UIElement;
+                    if (uielement.GetType() == typeof(System.Windows.Controls.ScrollViewer))
+                    {
+                        return (ScrollViewer)uielement;
+                    }
+                    ScrollViewer scrollviewer = GetScrollViewer(uielement);
+                    if (scrollviewer != null) return scrollviewer;
+                }
+            }
+
+            catch (Exception ex)
+            {
+                Debug.WriteLine("GetScrollViewer : Error => " + ex.Message);
+            }
+
+            return null;
+        }
+
         #region ページ遷移処理
         void ChangePage(CBasePage dest, TrasitionType trasision,
             System.Windows.Visibility toolbar,
             System.Windows.Visibility back_button)
         {
+            //現在の表示位置を保存する
+            if (m_CurrentPage == m_ucBoardList)
+            {
+                ScrollViewer sv = GetScrollViewer(m_ucBoardList.listFolder);
+                if(sv != null)
+                {
+                    m_Borad_VerticalOffset = sv.VerticalOffset;
+                    Debug.WriteLine("ChangePage : m_Borad_VerticalOffset = " + m_Borad_VerticalOffset.ToString());
+                }
+            }
+
             //メイン画面のボタン表示を設定する
             //btnBack.Visibility = back_button;
 
@@ -219,6 +268,15 @@ namespace _2chBrowser
             {
                 m_ucThreadList.listThread.ScrollIntoView(m_ucThreadList.listThread.SelectedItem);
             }
+            else if (m_CurrentPage == m_ucBoardList)
+            {
+                ScrollViewer sv = GetScrollViewer(m_ucBoardList.listFolder);
+                if(sv != null)
+                {
+                    sv.ScrollToVerticalOffset(m_Borad_VerticalOffset);
+                }
+            }
+
             return true;
         }
         #endregion
@@ -354,8 +412,6 @@ namespace _2chBrowser
         {
             LoadConfig();
 
-            m_ucBoardList.LoadBoardList(Properties.Settings.Default.bbs_menu_url);
-
             ChangePage(m_ucBoardList, TrasitionType.Trasition_None, Visibility.Visible, Visibility.Collapsed);
 
             m_ucBoardList.SetSelectedBoard(
@@ -410,10 +466,6 @@ namespace _2chBrowser
             else if (m_CurrentPage == m_ucThreadList)
             {
                 ChangePage(m_ucBoardList, TrasitionType.Trasition_SlideRight, Visibility.Visible, Visibility.Collapsed);
-
-                m_ucBoardList.SetSelectedBoard(
-                    Properties.Settings.Default.selected_board_category,
-                    Properties.Settings.Default.selected_board_name);
             }
             else if (m_CurrentPage == m_ucMessage)
             {

@@ -36,7 +36,7 @@ namespace _2chBrowser.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://2ch.sc/bbsmenu.html")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://menu.open2ch.net/bbsmenu.html")]
         public string bbs_menu_url {
             get {
                 return ((string)(this["bbs_menu_url"]));

@@ -6,7 +6,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="bbs_menu_url" Type="System.String" Scope="User">
-      <Value Profile="(Default)">https://2ch.sc/bbsmenu.html</Value>
+      <Value Profile="(Default)">http://menu.open2ch.net/bbsmenu.html</Value>
     </Setting>
     <Setting Name="font_size" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1</Value>
