@@ -340,6 +340,10 @@ namespace _2chBrowser
                     sw.Close();
                 }
 
+                //既読用データベースを開く
+                szFile = GetLogDirectory(m_CurrentBoard) + "\\obtained.db";
+                m_ucThreadList.Load(szFile);
+
                 //ページを表示する
                 ChangePage(m_ucThreadList, TrasitionType.Trasition_SlideLeft, Visibility.Visible, Visibility.Visible);
             }
@@ -465,6 +469,8 @@ namespace _2chBrowser
             }
             else if (m_CurrentPage == m_ucThreadList)
             {
+                string szFile = GetLogDirectory(m_CurrentBoard) + "\\obtained.db";
+                m_ucThreadList.Save(szFile);
                 ChangePage(m_ucBoardList, TrasitionType.Trasition_SlideRight, Visibility.Visible, Visibility.Collapsed);
             }
             else if (m_CurrentPage == m_ucMessage)
