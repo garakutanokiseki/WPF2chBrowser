@@ -24,6 +24,8 @@ namespace _2chBrowser
         public UC_Message()
         {
             InitializeComponent();
+
+            m_ButtonHomeVisibility = Visibility.Visible;
         }
 
         public void ShowDat(string dat)

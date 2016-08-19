@@ -241,7 +241,7 @@ namespace _2chBrowser
             }
 
             //メイン画面のボタン表示を設定する
-            //btnBack.Visibility = back_button;
+            btnBack.Visibility = back_button;
 
             //メニューの表示
             //btnMenu.Visibility = toolbar;
@@ -304,7 +304,7 @@ namespace _2chBrowser
 
         private void OnShowBoard()
         {
-            ChangePage(m_ucBoardList, TrasitionType.Trasition_SlideLeft, Visibility.Visible, Visibility.Collapsed);
+            ChangePage(m_ucBoardList, TrasitionType.Trasition_SlideLeft, Visibility.Visible, m_ucBoardList.m_ButtonHomeVisibility);
         }
 
         private void OnShowThread(Board board)
@@ -317,35 +317,51 @@ namespace _2chBrowser
                 Properties.Settings.Default.selected_board_category = board.Category;
                 Properties.Settings.Default.selected_board_name = board.Name;
 
-                WebRequest wr = WebRequest.Create(board.Url + "subject.txt");
-                WebResponse ws = wr.GetResponse();
-                string threadListText;
-                using (StreamReader sr = new StreamReader(ws.GetResponseStream(), Encoding.GetEncoding("Shift-Jis")))
-                {
-                    threadListText = sr.ReadToEnd();
-                    sr.Close();
-                }
+                //既読用データベースを開く
+                string szFile = GetLogDirectory(m_CurrentBoard) + "\\obtained.db";
+                m_ucThreadList.Load(szFile);
+
+                //スレッドファイル名を作成する
+                szFile = GetLogDirectory(m_CurrentBoard) + "\\subject.txt";
 
                 //スレッドを取得する
+                string threadListText = "";
+                if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable() == false)
+                {
+                    if (File.Exists(szFile))
+                    {
+                        using (StreamReader sr = new StreamReader(szFile))
+                        {
+                            threadListText = sr.ReadToEnd();
+                            sr.Close();
+                        }
+                    }
+                }
+                else{
+                    //Webから読み込む
+                    WebRequest wr = WebRequest.Create(board.Url + "subject.txt");
+                    WebResponse ws = wr.GetResponse();
+                    using (StreamReader sr = new StreamReader(ws.GetResponseStream(), Encoding.GetEncoding("Shift-Jis")))
+                    {
+                        threadListText = sr.ReadToEnd();
+                        sr.Close();
+                    }
+
+                    //スレッドを保存する
+                    using (StreamWriter sw = new System.IO.StreamWriter(szFile, false))
+                    {
+                        sw.Write(threadListText);
+                        sw.Close();
+                    }
+                }
+
                 if (m_ucThreadList.SetThreadList(threadListText) == false)
                 {
                     throw new Exception("Can' read thread");
                 }
 
-                //スレッドを保存する
-                string szFile = GetLogDirectory(m_CurrentBoard) + "\\subject.txt";
-                using (StreamWriter sw = new System.IO.StreamWriter(szFile, false))
-                {
-                    sw.Write(threadListText);
-                    sw.Close();
-                }
-
-                //既読用データベースを開く
-                szFile = GetLogDirectory(m_CurrentBoard) + "\\obtained.db";
-                m_ucThreadList.Load(szFile);
-
                 //ページを表示する
-                ChangePage(m_ucThreadList, TrasitionType.Trasition_SlideLeft, Visibility.Visible, Visibility.Visible);
+                ChangePage(m_ucThreadList, TrasitionType.Trasition_SlideLeft, Visibility.Visible, m_ucThreadList.m_ButtonHomeVisibility);
             }
 
             catch (Exception ex)
@@ -385,7 +401,7 @@ namespace _2chBrowser
             m_ucMessage.ShowDat(dat);
 
             //ページを切り替える
-            ChangePage(m_ucMessage, TrasitionType.Trasition_SlideLeft, Visibility.Visible, Visibility.Visible);
+            ChangePage(m_ucMessage, TrasitionType.Trasition_SlideLeft, Visibility.Visible, m_ucMessage.m_ButtonHomeVisibility);
         }
 
         void OnShowAbout()
@@ -471,11 +487,11 @@ namespace _2chBrowser
             {
                 string szFile = GetLogDirectory(m_CurrentBoard) + "\\obtained.db";
                 m_ucThreadList.Save(szFile);
-                ChangePage(m_ucBoardList, TrasitionType.Trasition_SlideRight, Visibility.Visible, Visibility.Collapsed);
+                ChangePage(m_ucBoardList, TrasitionType.Trasition_SlideRight, Visibility.Visible, m_ucBoardList.m_ButtonHomeVisibility);
             }
             else if (m_CurrentPage == m_ucMessage)
             {
-                ChangePage(m_ucThreadList, TrasitionType.Trasition_SlideRight, Visibility.Visible, Visibility.Collapsed);
+                ChangePage(m_ucThreadList, TrasitionType.Trasition_SlideRight, Visibility.Visible, m_ucThreadList.m_ButtonHomeVisibility);
             }
         }
 

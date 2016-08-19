@@ -23,6 +23,7 @@ namespace _2chBrowser
     {
         public UC_About()
         {
+            m_ButtonHomeVisibility = Visibility.Visible;
             InitializeComponent();
         }
 

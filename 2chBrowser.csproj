@@ -229,6 +229,14 @@
   <ItemGroup>
     <Resource Include="images\Command-Refresh-32.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\down.png" />
+    <Resource Include="images\new.png" />
+    <Resource Include="images\up.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\read.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

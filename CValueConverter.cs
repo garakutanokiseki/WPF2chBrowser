@@ -32,4 +32,26 @@ namespace _2chBrowser
         }
     }
 
+    [ValueConversion(typeof(int), typeof(Visibility))]
+    public class StatusVisibleConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            int status = (int)value;
+            string str_type = (string)parameter;
+
+            if (status == 0 && str_type == "normal")return Visibility.Visible;
+            if (status == 1 && str_type == "new") return Visibility.Visible;
+            if (status == 2 && str_type == "up") return Visibility.Visible;
+            if (status == 3 && str_type == "down") return Visibility.Visible;
+            if (status == 4 && str_type == "read") return Visibility.Visible;
+
+            return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
 }

@@ -23,6 +23,8 @@ namespace _2chBrowser
         public UC_BoardList()
         {
             InitializeComponent();
+
+            m_ButtonHomeVisibility = Visibility.Collapsed;
         }
 
         private void listFolderItem_MouseDoubleClick(object sender, RoutedEventArgs e)

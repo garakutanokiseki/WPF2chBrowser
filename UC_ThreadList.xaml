@@ -14,12 +14,20 @@
 
         <!--  コンバーター  -->
         <local:VisibleColorConverter x:Key="visibleColorConverter" />
+        <local:StatusVisibleConverter x:Key="StatusVisibleConverter" />
 
         <!-- リストボックス-ファイルリスト -->
         <DataTemplate x:Key="listDataFile">
             <Grid>
                 <Border Background="{Binding Path=visible, Converter={StaticResource visibleColorConverter}}">
-                    <TextBlock Margin="32,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Path=Title}" FontSize="{DynamicResource fontsize}"/>
+                    <DockPanel>
+                        <Image DockPanel.Dock="Left" Width="41" Source="images/new.png" Visibility="{Binding Path=status, Converter={StaticResource StatusVisibleConverter}, ConverterParameter=new, Mode=OneWay}"/>
+                        <Image DockPanel.Dock="Left" Width="41" Source="images/up.png" Visibility="{Binding Path=status, Converter={StaticResource StatusVisibleConverter}, ConverterParameter=up, Mode=OneWay}" />
+                        <Image DockPanel.Dock="Left" Width="41" Source="images/down.png" Visibility="{Binding Path=status, Converter={StaticResource StatusVisibleConverter}, ConverterParameter=down, Mode=OneWay}" />
+                        <Image DockPanel.Dock="Left" Width="41" Source="images/read.png" Visibility="{Binding Path=status, Converter={StaticResource StatusVisibleConverter}, ConverterParameter=read, Mode=OneWay}" />
+                        <Image DockPanel.Dock="Left" Width="41" Visibility="{Binding Path=status, Converter={StaticResource StatusVisibleConverter}, ConverterParameter=normal, Mode=OneWay}" />
+                        <TextBlock Margin="32,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Path=Title}" FontSize="{DynamicResource fontsize}"/>
+                    </DockPanel>
                 </Border>
             </Grid>
         </DataTemplate>

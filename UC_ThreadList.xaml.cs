@@ -34,6 +34,8 @@ namespace _2chBrowser
         {
             InitializeComponent();
 
+            m_ButtonHomeVisibility = Visibility.Visible;
+
             m_Sql = new SqliteConnection();
         }
 
@@ -115,7 +117,7 @@ namespace _2chBrowser
                     thread_data.Title = tmp[1];
                     thread_data.nID = -1;
                     thread_data.visible = false;
-                    thread_data.is_update = false;
+                    thread_data.status = 0;
                     thread_data.countobtained_count = 0;
                     thread_data.current_count = 0;
 
@@ -127,9 +129,32 @@ namespace _2chBrowser
                         thread_data.current_count = int.Parse(str_count);
                     }
 
-                    //TODO:取得済みのデータの有無を確認する
+                    //取得済みのデータの有無を確認する
+                    foreach (Thread past in m_listThread)
+                    {
+                        if(past.Number == thread_data.Number)
+                        {
+                            past.is_exist_in_server = true;
+                            if (past.countobtained_count < thread_data.current_count)
+                            {
+                                thread_data.status = 2;
+                            }
+                            else
+                            {
+                                thread_data.status = 4;
+                            }
+                            break;
+                        }
+                    }
 
                     listThread.Items.Add(thread_data);
+                }
+
+                //DAT落ちしたスレッドを追加する
+                foreach (Thread past in m_listThread)
+                {
+                    if (past.is_exist_in_server == true) continue;
+                    listThread.Items.Add(past);
                 }
 
                 listThread_sort();
@@ -190,6 +215,8 @@ namespace _2chBrowser
                 while (reader.Read())
                 {
                     Thread data = GetData(reader);
+                    data.is_exist_in_server = false;
+                    data.status = 3;
                     m_listThread.Add(data);
                 }
 
@@ -422,6 +449,7 @@ namespace _2chBrowser
             if(is_found == false)
             {
                 dat.countobtained_count = dat.current_count;
+                dat.status = 4;
                 m_listThread.Add(dat);
             }
 

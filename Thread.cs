@@ -1,6 +1,9 @@
-﻿namespace _2chBrowser
+﻿using System.ComponentModel;
+
+namespace _2chBrowser
 {
-    class Thread {
+    class Thread : INotifyPropertyChanged
+    {
         // -- データベースに記録するデータ --
         //データID
         public int nID { set; get; }
@@ -18,8 +21,20 @@
         //絞り込みフラグ
         public bool visible { set; get; }
 
-        //更新フラグ
-        public bool is_update { get; set; }
+        //状態　0:通常、1:新規、2:更新あり、3:DAT落ち、4:既読
+        private int _status = 0;
+        public int status
+        {
+            get
+            {
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                OnPropertyChanged("status");
+            }
+        }
 
         //現在のデータ数
         public int current_count { set; get; }
@@ -31,6 +46,19 @@
         public override string ToString()
         {
             return Title;
+        }
+
+        // イベント宣言
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        // イベントに対応するOnPropertyChanged メソッドを作る
+        protected void OnPropertyChanged(string name)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(name));
+            }
         }
     }
 }
