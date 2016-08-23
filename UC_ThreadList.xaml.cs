@@ -101,12 +101,10 @@ namespace _2chBrowser
             Debug.WriteLine("listThread_sort <<");
         }
 
-        public bool SetThreadList(string threadlist)
+        private bool ParseThreadList(string threadlist, IList list_dest, bool is_check_past_data)
         {
             try
             {
-                listThread.Items.Clear();
-
                 foreach (string row in threadlist.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     string[] tmp = row.Split(new string[] { "<>" }, StringSplitOptions.RemoveEmptyEntries);
@@ -123,31 +121,80 @@ namespace _2chBrowser
 
                     int start = thread_data.Title.LastIndexOf("(") + 1;
                     int end = thread_data.Title.LastIndexOf(")");
-                    if(start > 0 && end > start)
+                    if (start > 0 && end > start)
                     {
                         string str_count = thread_data.Title.Substring(start, end - start);
                         thread_data.current_count = int.Parse(str_count);
                     }
 
                     //取得済みのデータの有無を確認する
-                    foreach (Thread past in m_listThread)
+                    if(is_check_past_data == true)
                     {
-                        if(past.Number == thread_data.Number)
+                        foreach (Thread past in m_listThread)
                         {
-                            past.is_exist_in_server = true;
-                            if (past.countobtained_count < thread_data.current_count)
+                            if (past.Number == thread_data.Number)
                             {
-                                thread_data.status = 2;
+                                past.is_exist_in_server = true;
+                                if (past.countobtained_count < thread_data.current_count)
+                                {
+                                    thread_data.status = 2;
+                                }
+                                else
+                                {
+                                    thread_data.status = 4;
+                                }
+                                break;
                             }
-                            else
-                            {
-                                thread_data.status = 4;
-                            }
+                        }
+                    }
+
+                    list_dest.Add(thread_data);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("ParseThreadList : [Error]" + ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool SetThreadList(string threadlist, string pastListText)
+        {
+            try
+            {
+                //過去リストを読み込む
+                List<Thread> listPast = new List<Thread>();
+                if(pastListText != "")
+                {
+                    ParseThreadList(pastListText, listPast, false);
+                }
+
+                //データをクリアする
+                listThread.Items.Clear();
+
+                //データをリストに追加する
+                ParseThreadList(threadlist, listThread.Items, true);
+
+                //新規スレッドを探査する
+                foreach(Thread thread in listThread.Items)
+                {
+                    bool is_found = false;
+                    for(int i=0;i< listPast.Count(); ++i)
+                    {
+                        if(listPast[i].Number == thread.Number)
+                        {
+                            listPast.RemoveAt(i);
+                            is_found = true;
                             break;
                         }
                     }
 
-                    listThread.Items.Add(thread_data);
+                    if(is_found == false)
+                    {
+                        thread.status = 1;
+                    }
                 }
 
                 //DAT落ちしたスレッドを追加する
@@ -157,6 +204,7 @@ namespace _2chBrowser
                     listThread.Items.Add(past);
                 }
 
+                //ソートする
                 listThread_sort();
 
                 return true;

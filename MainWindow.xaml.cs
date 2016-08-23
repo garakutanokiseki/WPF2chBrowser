@@ -326,16 +326,22 @@ namespace _2chBrowser
 
                 //スレッドを取得する
                 string threadListText = "";
+                string pastListText = "";
+
+                //過去のデータを読み込む
+                if (File.Exists(szFile))
+                {
+                    using (StreamReader sr = new StreamReader(szFile))
+                    {
+                        pastListText = sr.ReadToEnd();
+                        sr.Close();
+                    }
+                }
+
                 if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable() == false)
                 {
-                    if (File.Exists(szFile))
-                    {
-                        using (StreamReader sr = new StreamReader(szFile))
-                        {
-                            threadListText = sr.ReadToEnd();
-                            sr.Close();
-                        }
-                    }
+                    threadListText = pastListText;
+                    pastListText = "";
                 }
                 else{
                     //Webから読み込む
@@ -355,7 +361,7 @@ namespace _2chBrowser
                     }
                 }
 
-                if (m_ucThreadList.SetThreadList(threadListText) == false)
+                if (m_ucThreadList.SetThreadList(threadListText, pastListText) == false)
                 {
                     throw new Exception("Can' read thread");
                 }
