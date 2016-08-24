@@ -278,6 +278,10 @@
             </DockPanel>
         </Grid>
 
+        <DockPanel DockPanel.Dock="Bottom">
+            <TextBlock Name="textStatus" Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" />
+        </DockPanel>
+        
         <Grid>
             <!-- メインビュー表示領域-->
             <Grid Name="gridMain">

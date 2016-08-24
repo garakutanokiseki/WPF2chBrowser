@@ -63,6 +63,9 @@ namespace _2chBrowser
         Board m_CurrentBoard;
         Thread m_CurrentThread;
 
+        //スレッド
+        System.Threading.Thread m_threadGetThread;
+
         //現在の表示ページ
         CBasePage m_CurrentPage;
 
@@ -311,8 +314,14 @@ namespace _2chBrowser
         {
             try
             {
+                if(m_threadGetThread != null && m_threadGetThread.IsAlive)
+                {
+                    return;
+                }
+                m_threadGetThread = null;
+
                 //表示ボードを保持する
-                m_CurrentBoard = board;
+                    m_CurrentBoard = board;
 
                 Properties.Settings.Default.selected_board_category = board.Category;
                 Properties.Settings.Default.selected_board_name = board.Name;
@@ -338,36 +347,51 @@ namespace _2chBrowser
                     }
                 }
 
-                if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable() == false)
-                {
-                    threadListText = pastListText;
-                    pastListText = "";
-                }
-                else{
-                    //Webから読み込む
-                    WebRequest wr = WebRequest.Create(board.Url + "subject.txt");
-                    WebResponse ws = wr.GetResponse();
-                    using (StreamReader sr = new StreamReader(ws.GetResponseStream(), Encoding.GetEncoding("Shift-Jis")))
-                    {
-                        threadListText = sr.ReadToEnd();
-                        sr.Close();
-                    }
-
-                    //スレッドを保存する
-                    using (StreamWriter sw = new System.IO.StreamWriter(szFile, false))
-                    {
-                        sw.Write(threadListText);
-                        sw.Close();
-                    }
-                }
-
-                if (m_ucThreadList.SetThreadList(threadListText, pastListText) == false)
-                {
-                    throw new Exception("Can' read thread");
-                }
+                //取得済みスレッドを表示する
+                m_ucThreadList.SetThreadList(pastListText, "");
 
                 //ページを表示する
                 ChangePage(m_ucThreadList, TrasitionType.Trasition_SlideLeft, Visibility.Visible, m_ucThreadList.m_ButtonHomeVisibility);
+
+                m_threadGetThread = new System.Threading.Thread(() =>
+                {
+                    if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable() == true)
+                    {
+                        this.Dispatcher.Invoke((Action)(() =>
+                        {
+                            textStatus.Text = board.Name + "を取得中・・・";
+                        }));
+
+                        //Webから読み込む
+                        WebRequest wr = WebRequest.Create(board.Url + "subject.txt");
+                        WebResponse ws = wr.GetResponse();
+                        using (StreamReader sr = new StreamReader(ws.GetResponseStream(), Encoding.GetEncoding("Shift-Jis")))
+                        {
+                            threadListText = sr.ReadToEnd();
+                            sr.Close();
+                        }
+
+                        //スレッドを保存する
+                        using (StreamWriter sw = new System.IO.StreamWriter(szFile, false))
+                        {
+                            sw.Write(threadListText);
+                            sw.Close();
+                        }
+
+                        this.Dispatcher.Invoke((Action)(() =>
+                        {
+                            textStatus.Text = "";
+
+                            if (m_ucThreadList.SetThreadList(threadListText, pastListText) == false)
+                            {
+                                //throw new Exception("Can' read thread");
+                                //TODO:エラー表示を行う(Toast)
+                            }
+
+                        }));
+                    }
+                });
+                m_threadGetThread.Start();
             }
 
             catch (Exception ex)

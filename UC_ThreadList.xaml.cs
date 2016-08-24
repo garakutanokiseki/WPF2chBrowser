@@ -164,12 +164,7 @@ namespace _2chBrowser
         {
             try
             {
-                //過去リストを読み込む
                 List<Thread> listPast = new List<Thread>();
-                if(pastListText != "")
-                {
-                    ParseThreadList(pastListText, listPast, false);
-                }
 
                 //データをクリアする
                 listThread.Items.Clear();
@@ -178,22 +173,33 @@ namespace _2chBrowser
                 ParseThreadList(threadlist, listThread.Items, true);
 
                 //新規スレッドを探査する
-                foreach(Thread thread in listThread.Items)
+                if (pastListText != "")
                 {
-                    bool is_found = false;
-                    for(int i=0;i< listPast.Count(); ++i)
-                    {
-                        if(listPast[i].Number == thread.Number)
-                        {
-                            listPast.RemoveAt(i);
-                            is_found = true;
-                            break;
-                        }
-                    }
+                    //過去リストを読み込む
+                    ParseThreadList(pastListText, listPast, false);
 
-                    if(is_found == false)
+                    foreach (Thread thread in listThread.Items)
                     {
-                        thread.status = 1;
+                        bool is_found = false;
+                        int index = 0;
+                        foreach (Thread past in listPast)
+                        {
+                            if (past.Number == thread.Number)
+                            {
+                                is_found = true;
+                                break;
+                            }
+                            ++index;
+                        }
+
+                        if (is_found == false)
+                        {
+                            thread.status = 1;
+                        }
+                        else
+                        {
+                            listPast.RemoveAt(index);
+                        }
                     }
                 }
 
