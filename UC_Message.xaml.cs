@@ -14,49 +14,94 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using NVelocity;
+using NVelocity.App;
+using NVelocity.Exception;
+using System.Diagnostics;
+
 namespace _2chBrowser
 {
+    class MessageData
+    {
+        public string rescount { get; set; }
+        public string name { get; set; }
+        public string mail { get; set; }
+        public string date { get; set; }
+        public string message { get; set; }
+
+    }
+
     /// <summary>
     /// UC_Message.xaml の相互作用ロジック
     /// </summary>
     public partial class UC_Message : CBasePage
     {
+        VelocityContext m_velocityctx;
+        string [] m_themes = WPF.Themes.ThemeManager.GetThemes();
+
         public UC_Message()
         {
             InitializeComponent();
 
             m_ButtonHomeVisibility = Visibility.Visible;
+
+            //NVelocityの初期化
+            Velocity.Init();
+            m_velocityctx = new VelocityContext();
         }
 
         public void ShowDat(string dat)
         {
+            List<MessageData> messages = new List<MessageData>();
+            string title;
+            int font_size;
+
+            font_size = 5 - Properties.Settings.Default.font_size;
+
             Regex regex = new Regex("((s?https?|ttp)://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+)");
 
-            StringBuilder sb = new StringBuilder("<HTML><HEAD><META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"></HEAD><BODY><font face=\"ＭＳ ゴシック\">");
+            //StringBuilder sb = new StringBuilder("");
             string[] datElements = dat.Split(new string[] { "<>" }, StringSplitOptions.None);
+
+            title = datElements[4].Split(new char[] { '\n' })[0];
+
             int resCount = 1;
-
-            sb.Append("<H2>" + datElements[4].Split(new char[] { '\n' })[0] + "</H2>");
-
-            sb.Append(resCount.ToString() + ": " + "NAME:" + datElements[0] + "[" + datElements[1] + "] DATE:" + datElements[2] + "<br><br>" );
-            string result = regex.Replace(datElements[3], "<a href=\"$1\" target=\"_blank\">$1</a>");
-            sb.Append(result + "<br>");
-
-            resCount++;
-            for (int i = 4; i < datElements.Length - 4; i = i + 4)
+            for (int i = 0; i < datElements.Length - 4; i = i + 4)
             {
-                sb.Append("<hr>");
-                sb.Append(resCount.ToString() + ": " + "NAME:" + (i == 4 ? datElements[i].Split(new char[] { '\n' })[1] : datElements[i]) + "[" + datElements[i + 1] + "] DATE:" + datElements[i + 2] + "<br><br>");
+                MessageData message_data = new MessageData();
+                message_data.rescount = resCount.ToString();
+                message_data.name = i == 4 ? datElements[i].Split(new char[] { '\n' })[1] : datElements[i];//datElements[i];
+                message_data.mail = datElements[i+1];
+                message_data.date = datElements[i+2];
+                message_data.message = regex.Replace(datElements[i+3], "<a href=\"$1\" target=\"_blank\">$1</a>");
 
-                result = regex.Replace(datElements[i + 3], "<a href=\"$1\" target=\"_blank\">$1</a>");
-                sb.Append(result + "<br>");
+                messages.Add(message_data);
 
                 resCount++;
             }
-            sb.Replace("<b>", "");
-            sb.Replace("</b>", "");
-            sb.Append("</font></BODY></HTML>");
-            browser.NavigateToString(sb.ToString());
+
+            m_velocityctx.Put("title", title);
+            m_velocityctx.Put("font_size", font_size);
+            m_velocityctx.Put("messages", messages);
+
+            try
+            {
+                string template_file = ".\\Template\\" + m_themes[Properties.Settings.Default.theme] + "\\message.html";
+
+                Debug.WriteLine(template_file);
+
+                System.IO.StringWriter resultWriter = new System.IO.StringWriter();
+                Velocity.MergeTemplate(template_file, "UTF-8", m_velocityctx, resultWriter);
+                string result = resultWriter.GetStringBuilder().ToString();
+                browser.NavigateToString(result);
+            }
+            catch (ResourceNotFoundException ex)
+            {
+            }
+            catch (ParseErrorException ex)
+            {
+            }
+
         }
     }
 }
