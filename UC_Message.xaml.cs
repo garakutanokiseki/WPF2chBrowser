@@ -56,7 +56,7 @@ namespace _2chBrowser
             string title;
             int font_size;
 
-            font_size = 5 - Properties.Settings.Default.font_size;
+            font_size = 4 - Properties.Settings.Default.font_size;
 
             Regex regex = new Regex("((s?https?|ttp)://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+)");
 
