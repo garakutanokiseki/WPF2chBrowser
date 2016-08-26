@@ -52,37 +52,40 @@ namespace _2chBrowser
 
         public void ShowDat(string dat)
         {
-            List<MessageData> messages = new List<MessageData>();
-            string title;
-            int font_size;
-
-            font_size = 4 - Properties.Settings.Default.font_size;
-
-            Regex regex = new Regex("((s?https?|ttp)://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+)");
-
-            //StringBuilder sb = new StringBuilder("");
-            string[] datElements = dat.Split(new string[] { "<>" }, StringSplitOptions.None);
-
-            title = datElements[4].Split(new char[] { '\n' })[0];
-
-            int resCount = 1;
-            for (int i = 0; i < datElements.Length - 4; i = i + 4)
+            if(dat != "")
             {
-                MessageData message_data = new MessageData();
-                message_data.rescount = resCount.ToString();
-                message_data.name = i == 4 ? datElements[i].Split(new char[] { '\n' })[1] : datElements[i];//datElements[i];
-                message_data.mail = datElements[i+1];
-                message_data.date = datElements[i+2];
-                message_data.message = regex.Replace(datElements[i+3], "<a href=\"$1\" target=\"_blank\">$1</a>");
+                List<MessageData> messages = new List<MessageData>();
+                string title;
+                int font_size;
 
-                messages.Add(message_data);
+                font_size = 4 - Properties.Settings.Default.font_size;
 
-                resCount++;
+                Regex regex = new Regex("((s?https?|ttp)://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+)");
+
+                //StringBuilder sb = new StringBuilder("");
+                string[] datElements = dat.Split(new string[] { "<>" }, StringSplitOptions.None);
+
+                title = datElements[4].Split(new char[] { '\n' })[0];
+
+                int resCount = 1;
+                for (int i = 0; i < datElements.Length - 4; i = i + 4)
+                {
+                    MessageData message_data = new MessageData();
+                    message_data.rescount = resCount.ToString();
+                    message_data.name = i == 4 ? datElements[i].Split(new char[] { '\n' })[1] : datElements[i];//datElements[i];
+                    message_data.mail = datElements[i + 1];
+                    message_data.date = datElements[i + 2];
+                    message_data.message = regex.Replace(datElements[i + 3], "<a href=\"$1\" target=\"_blank\">$1</a>");
+
+                    messages.Add(message_data);
+
+                    resCount++;
+                }
+
+                m_velocityctx.Put("title", title);
+                m_velocityctx.Put("font_size", font_size);
+                m_velocityctx.Put("messages", messages);
             }
-
-            m_velocityctx.Put("title", title);
-            m_velocityctx.Put("font_size", font_size);
-            m_velocityctx.Put("messages", messages);
 
             try
             {

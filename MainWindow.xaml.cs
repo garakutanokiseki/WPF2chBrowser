@@ -157,6 +157,10 @@ namespace _2chBrowser
             //板一覧を保存する
             m_ucBoardList.SaveBoard(GetAppDataPath() + "boardlist.xml");
 
+            //現在のスレッドを保存する
+            string szFile = GetLogDirectory(m_CurrentBoard) + "\\obtained.db";
+            m_ucThreadList.Save(szFile);
+
             //ウインドウの位置を保存する
             WINDOWPLACEMENT wp = CUtilWindowRestore.Get(this);
             Properties.Settings.Default.WindowPlacement = wp;
@@ -321,7 +325,7 @@ namespace _2chBrowser
                 m_threadGetThread = null;
 
                 //表示ボードを保持する
-                    m_CurrentBoard = board;
+                m_CurrentBoard = board;
 
                 Properties.Settings.Default.selected_board_category = board.Category;
                 Properties.Settings.Default.selected_board_name = board.Name;
@@ -403,35 +407,100 @@ namespace _2chBrowser
 
         private void OnShowMessage(Thread thread)
         {
+            string dat = "";
+            long obtained_file_length = 0;
+
             //表示スレッドを保持する
             m_CurrentThread = thread;
-
-            //メッセージをダウンロードする
-            string url = m_CurrentBoard.Url + "dat/" + thread.Number;
-
-            HttpWebRequest hwreq = (HttpWebRequest)(HttpWebRequest.Create(url));
-            hwreq.UserAgent = "Monazilla";
-            WebResponse res = hwreq.GetResponse();
-            string dat = "";
-            using (StreamReader sr = new StreamReader(res.GetResponseStream(), Encoding.GetEncoding("Shift-Jis")))
-            {
-                dat = sr.ReadToEnd();
-                sr.Close();
-            }
-
-            //ログを保存する
+            //ファイル名を作成する
             string szFile = GetLogDirectory(m_CurrentBoard) + "\\" + thread.Number.ToString();
-            using (StreamWriter sw = new System.IO.StreamWriter(szFile, false))
+
+            //過去のデータを読み込む
+            if (File.Exists(szFile))
             {
-                sw.Write(dat);
-                sw.Close();
+                FileInfo info = new FileInfo(szFile);
+                obtained_file_length = info.Length;
+
+                using (StreamReader sr = new StreamReader(szFile, Encoding.GetEncoding("Shift-jis")))
+                {
+                    dat = sr.ReadToEnd();
+                    sr.Close();
+                }
+
             }
 
-            //メッセージを表示する
             m_ucMessage.ShowDat(dat);
 
             //ページを切り替える
             ChangePage(m_ucMessage, TrasitionType.Trasition_SlideLeft, Visibility.Visible, m_ucMessage.m_ButtonHomeVisibility);
+
+            Debug.WriteLine(string.Format("OnShowMessage : countobtained_count = {0}, current_count={1}", thread.countobtained_count, thread.current_count));
+
+            //データを取得済みの場合は取得しない
+            if (thread.countobtained_count == thread.current_count) return;
+
+            System.Threading.Thread download_thread = new System.Threading.Thread(() =>
+            {
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    textStatus.Text = thread.Title + "を取得中・・・";
+                }));
+
+                try
+                {
+                    //メッセージをダウンロードする
+                    string url = m_CurrentBoard.Url + "dat/" + thread.Number;
+
+                    HttpWebRequest hwreq = (HttpWebRequest)(HttpWebRequest.Create(url));
+                    hwreq.UserAgent = "Monazilla";
+                    if (obtained_file_length != 0)
+                        hwreq.AddRange(obtained_file_length);
+                    WebResponse res = hwreq.GetResponse();
+
+                    //応答データをファイルに書き込む
+                    byte[] readData = new byte[1024];
+                    Stream strm = res.GetResponseStream();
+                    System.IO.MemoryStream ms = new System.IO.MemoryStream();
+
+                    for (;;)
+                    {
+                        //データを読み込む
+                        int readSize = strm.Read(readData, 0, readData.Length);
+                        if (readSize == 0)
+                        {
+                            //すべてのデータを読み込んだ時
+                            break;
+                        }
+                        //読み込んだデータをファイルに書き込む
+                        //sw.Write(readData, 0, readSize);
+                        ms.Write(readData, 0, readSize);
+                    }
+                    using (FileStream sw = new System.IO.FileStream(szFile, System.IO.FileMode.Append, System.IO.FileAccess.Write))
+                    {
+                        sw.Write(ms.ToArray(), 0, (int)ms.Length);
+                        sw.Close();
+                    }
+
+                    this.Dispatcher.Invoke((Action)(() =>
+                    {
+                        dat = dat + Encoding.GetEncoding("Shift-JIS").GetString(ms.ToArray());
+                        //dat = dat + Encoding.Unicode.GetString(ms.ToArray());
+                        //メッセージを表示する
+                        m_ucMessage.ShowDat(dat);
+                    }));
+                }
+
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("OnShowMessage : Error => " + ex.Message);
+                }
+
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    textStatus.Text = "";
+                }));
+            });
+            download_thread.Start();
         }
 
         void OnShowAbout()

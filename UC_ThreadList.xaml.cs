@@ -494,7 +494,7 @@ namespace _2chBrowser
             {
                 if(m_listThread[i].Number == dat.Number)
                 {
-                    m_listThread[i].countobtained_count = dat.current_count;
+                    //m_listThread[i].countobtained_count = dat.current_count;
                     is_found = true;
                     break;
                 }
@@ -502,12 +502,20 @@ namespace _2chBrowser
 
             if(is_found == false)
             {
-                dat.countobtained_count = dat.current_count;
                 dat.status = 4;
                 m_listThread.Add(dat);
             }
 
             m_EventHandler(MainWindow.EventID.ShowMessage, dat);
+
+            foreach (Thread thread in m_listThread)
+            {
+                if (thread.Number == dat.Number)
+                {
+                    thread.countobtained_count = dat.current_count;
+                    break;
+                }
+            }
         }
 
         private void cmdNarrowingWord_KeyDown(object sender, KeyEventArgs e)
