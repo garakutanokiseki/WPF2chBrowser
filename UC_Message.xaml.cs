@@ -62,7 +62,6 @@ namespace _2chBrowser
 
                 Regex regex = new Regex("((s?https?|ttp)://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+)");
 
-                //StringBuilder sb = new StringBuilder("");
                 string[] datElements = dat.Split(new string[] { "<>" }, StringSplitOptions.None);
 
                 title = datElements[4].Split(new char[] { '\n' })[0];
@@ -82,7 +81,10 @@ namespace _2chBrowser
                     resCount++;
                 }
 
+                string basedirectory = System.IO.Directory.GetCurrentDirectory().Replace("\\", "/") + "/";
+
                 m_velocityctx.Put("title", title);
+                m_velocityctx.Put("basedirectory", basedirectory);
                 m_velocityctx.Put("font_size", font_size);
                 m_velocityctx.Put("messages", messages);
             }
