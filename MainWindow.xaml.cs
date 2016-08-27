@@ -429,7 +429,7 @@ namespace _2chBrowser
 
             }
 
-            m_ucMessage.ShowDat(dat);
+            m_ucMessage.ShowDat(dat, thread.countobtained_count);
 
             //ページを切り替える
             ChangePage(m_ucMessage, TrasitionType.Trasition_SlideLeft, Visibility.Visible, m_ucMessage.m_ButtonHomeVisibility);
@@ -484,9 +484,8 @@ namespace _2chBrowser
                     this.Dispatcher.Invoke((Action)(() =>
                     {
                         dat = dat + Encoding.GetEncoding("Shift-JIS").GetString(ms.ToArray());
-                        //dat = dat + Encoding.Unicode.GetString(ms.ToArray());
                         //メッセージを表示する
-                        m_ucMessage.ShowDat(dat);
+                        m_ucMessage.ShowDat(dat, thread.countobtained_count);
                     }));
                 }
 

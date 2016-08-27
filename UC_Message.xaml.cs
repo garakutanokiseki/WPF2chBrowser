@@ -28,6 +28,7 @@ namespace _2chBrowser
         public string mail { get; set; }
         public string date { get; set; }
         public string message { get; set; }
+        public bool is_new { get; set; }
 
     }
 
@@ -50,7 +51,7 @@ namespace _2chBrowser
             m_velocityctx = new VelocityContext();
         }
 
-        public void ShowDat(string dat)
+        public void ShowDat(string dat, int obtained_count)
         {
             if(dat != "")
             {
@@ -75,7 +76,7 @@ namespace _2chBrowser
                     message_data.mail = datElements[i + 1];
                     message_data.date = datElements[i + 2];
                     message_data.message = regex.Replace(datElements[i + 3], "<a href=\"$1\" target=\"_blank\">$1</a>");
-
+                    message_data.is_new = resCount > obtained_count ? true : false;
                     messages.Add(message_data);
 
                     resCount++;

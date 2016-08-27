@@ -135,6 +135,7 @@ namespace _2chBrowser
                             if (past.Number == thread_data.Number)
                             {
                                 past.is_exist_in_server = true;
+                                thread_data.countobtained_count = past.countobtained_count;
                                 if (past.countobtained_count < thread_data.current_count)
                                 {
                                     thread_data.status = 2;
@@ -494,7 +495,6 @@ namespace _2chBrowser
             {
                 if(m_listThread[i].Number == dat.Number)
                 {
-                    //m_listThread[i].countobtained_count = dat.current_count;
                     is_found = true;
                     break;
                 }
@@ -502,11 +502,12 @@ namespace _2chBrowser
 
             if(is_found == false)
             {
-                dat.status = 4;
                 m_listThread.Add(dat);
             }
 
             m_EventHandler(MainWindow.EventID.ShowMessage, dat);
+
+            dat.status = 4;
 
             foreach (Thread thread in m_listThread)
             {
