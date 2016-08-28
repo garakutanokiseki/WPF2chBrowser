@@ -7,11 +7,9 @@
 	<BODY style="background-color : #FFFFFF">
 		<font face="ＭＳ ゴシック" color="#3F3F3F" size="$font_size">
 			<H2>$title</H2>
-			#foreach($message in $messages)
-				<hr>
-				$message.rescount $message.name $message.mail $message.date<br><br>
-				$message.message
-			#end
+			<div id="content">
+				$content
+			</div>
 		</font>
 	</BODY>
 </HTML>

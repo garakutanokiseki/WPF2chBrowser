@@ -4,18 +4,12 @@
 		<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<base href="file:///${basedirectory}" />
 	</HEAD>
-	<BODY style="background-color:#181818; background-image:url('test.jpg') ;background-attachment:fixed;background-repeat:repeat">
-	
+	<BODY style="background-color:#181818;">
 		<font face="ＭＳ ゴシック" color="#BABABA" size="$font_size">
 			<H2>$title</H2>
-			#foreach($message in $messages)
-				<hr>
-				#if($message.is_new == true)
-				<img src="new.png">
-				#end
-				$message.rescount $message.name $message.mail $message.date<br><br>
-				$message.message
-			#end
+			<div id="content">
+				$content
+			</div>
 		</font>
 	</BODY>
 </HTML>

@@ -426,7 +426,6 @@ namespace _2chBrowser
                     dat = sr.ReadToEnd();
                     sr.Close();
                 }
-
             }
 
             m_ucMessage.ShowDat(dat, thread.countobtained_count);
@@ -483,9 +482,16 @@ namespace _2chBrowser
 
                     this.Dispatcher.Invoke((Action)(() =>
                     {
-                        dat = dat + Encoding.GetEncoding("Shift-JIS").GetString(ms.ToArray());
-                        //メッセージを表示する
-                        m_ucMessage.ShowDat(dat, thread.countobtained_count);
+                        string downloaded_dat = Encoding.GetEncoding("Shift-JIS").GetString(ms.ToArray());
+                        if(dat == "")
+                        {
+                            //メッセージを表示する
+                            m_ucMessage.ShowDat(dat + downloaded_dat, thread.countobtained_count);
+                        }
+                        else
+                        {
+                            m_ucMessage.InsertDat(downloaded_dat, thread.countobtained_count);
+                        }
                     }));
                 }
 
