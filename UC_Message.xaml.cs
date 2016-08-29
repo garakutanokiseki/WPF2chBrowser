@@ -31,6 +31,7 @@ namespace _2chBrowser
 
         bool m_is_insert;
         string m_Inserttext = "";
+        int m_resCount = 0;
 
         public UC_Message()
         {
@@ -62,7 +63,6 @@ namespace _2chBrowser
 
             Regex regex = new Regex("((s?https?|ttp)://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+)");
 
-            //int resCount = 1;
             for (int i = 0; i < datElements.Length - 4; i = i + 4)
             {
                 MessageData message_data = new MessageData();
@@ -77,6 +77,12 @@ namespace _2chBrowser
                 resCount++;
             }
 
+            //レスの数を保持する
+            if(m_resCount <= resCount - 1)
+            {
+                m_resCount = resCount - 1;
+            }
+
             //テンプレートを適用する
             m_velocityctx.Put("messages", messages);
 
@@ -89,6 +95,11 @@ namespace _2chBrowser
             return resultWriter.GetStringBuilder().ToString();
         }
 
+        /// <summary>
+        /// 指定したDATファイルの内容からページを作成する
+        /// </summary>
+        /// <param name="dat"></param>
+        /// <param name="obtained_count"></param>
         public void ShowDat(string dat, int obtained_count)
         {
             string title;
@@ -96,6 +107,8 @@ namespace _2chBrowser
 
             string basedirectory = System.IO.Directory.GetCurrentDirectory().Replace("\\", "/") + "/";
             int font_size = 4 - Properties.Settings.Default.font_size;
+
+            m_resCount = 0;
 
             if (dat == "")
             {
@@ -120,8 +133,6 @@ namespace _2chBrowser
             {
                 string template_file = ".\\Template\\" + m_themes[Properties.Settings.Default.theme] + "\\message.html";
 
-                Debug.WriteLine(template_file);
-
                 System.IO.StringWriter resultWriter = new System.IO.StringWriter();
                 Velocity.MergeTemplate(template_file, "UTF-8", m_velocityctx, resultWriter);
                 string result = resultWriter.GetStringBuilder().ToString();
@@ -140,6 +151,11 @@ namespace _2chBrowser
 
         }
 
+        /// <summary>
+        /// 指定したDATファイルの内容を現在の表示内容に追加する
+        /// </summary>
+        /// <param name="dat"></param>
+        /// <param name="obtained_count"></param>
         public void InsertDat(string dat, int obtained_count)
         {
             if (dat == "") return;
@@ -151,7 +167,7 @@ namespace _2chBrowser
         }
 
 
-        void AddTextToContent(string html)
+        private void AddTextToContent(string html)
         {
             if(browser.IsLoaded == false)
             {
@@ -169,6 +185,13 @@ namespace _2chBrowser
                 return;
             }
             element_content.innerHTML = element_content.innerHTML + html;
+        }
+
+        public int get_rescount()
+        {
+            Debug.WriteLine("MessageData::get_rescount m_resCount = " + m_resCount.ToString());
+
+            return m_resCount;
         }
     }
 }

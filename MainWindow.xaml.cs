@@ -240,6 +240,197 @@ namespace _2chBrowser
             return null;
         }
 
+        private void UpdateThread(bool is_show_thread_page, Board board)
+        {
+            if (m_threadGetThread != null && m_threadGetThread.IsAlive)
+            {
+                return;
+            }
+            m_threadGetThread = null;
+
+            //表示ボードを保持する
+            m_CurrentBoard = board;
+
+            Properties.Settings.Default.selected_board_category = board.Category;
+            Properties.Settings.Default.selected_board_name = board.Name;
+
+            //既読用データベースを開く
+            string szFile = GetLogDirectory(m_CurrentBoard) + "\\obtained.db";
+            m_ucThreadList.Load(szFile);
+
+            //スレッドファイル名を作成する
+            szFile = GetLogDirectory(m_CurrentBoard) + "\\subject.txt";
+
+            //スレッドを取得する
+            string threadListText = "";
+            string pastListText = "";
+
+            //過去のデータを読み込む
+            if (File.Exists(szFile))
+            {
+                using (StreamReader sr = new StreamReader(szFile))
+                {
+                    pastListText = sr.ReadToEnd();
+                    sr.Close();
+                }
+            }
+
+            //取得済みスレッドを表示する
+            m_ucThreadList.SetThreadList(pastListText, "");
+
+            //ページを表示する
+            if(is_show_thread_page == true)
+                ChangePage(m_ucThreadList, TrasitionType.Trasition_SlideLeft, Visibility.Visible, m_ucThreadList.m_ButtonHomeVisibility);
+
+            m_threadGetThread = new System.Threading.Thread(() =>
+            {
+                if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable() == true)
+                {
+                    this.Dispatcher.Invoke((Action)(() =>
+                    {
+                        textStatus.Text = board.Name + "を取得中・・・";
+                    }));
+
+                    //Webから読み込む
+                    WebRequest wr = WebRequest.Create(board.Url + "subject.txt");
+                    WebResponse ws = wr.GetResponse();
+                    using (StreamReader sr = new StreamReader(ws.GetResponseStream(), Encoding.GetEncoding("Shift-Jis")))
+                    {
+                        threadListText = sr.ReadToEnd();
+                        sr.Close();
+                    }
+
+                    //スレッドを保存する
+                    using (StreamWriter sw = new System.IO.StreamWriter(szFile, false))
+                    {
+                        sw.Write(threadListText);
+                        sw.Close();
+                    }
+
+                    this.Dispatcher.Invoke((Action)(() =>
+                    {
+                        textStatus.Text = "";
+
+                        if (m_ucThreadList.SetThreadList(threadListText, pastListText) == false)
+                        {
+                            //throw new Exception("Can' read thread");
+                            //TODO:エラー表示を行う(Toast)
+                        }
+
+                    }));
+                }
+            });
+            m_threadGetThread.Start();
+        }
+
+        private void UpdateMessage(bool is_show_message_page, Thread thread)
+        {
+            string dat = "";
+            long obtained_file_length = 0;
+
+            //表示スレッドを保持する
+            m_CurrentThread = thread;
+            //ファイル名を作成する
+            string szFile = GetLogDirectory(m_CurrentBoard) + "\\" + thread.Number.ToString();
+
+            //過去のデータを読み込む
+            if (File.Exists(szFile))
+            {
+                FileInfo info = new FileInfo(szFile);
+                obtained_file_length = info.Length;
+
+                if(is_show_message_page == true)
+                {
+                    using (StreamReader sr = new StreamReader(szFile, Encoding.GetEncoding("Shift-jis")))
+                    {
+                        dat = sr.ReadToEnd();
+                        sr.Close();
+                    }
+                }
+            }
+
+            //ページを切り替える
+            if(is_show_message_page == true)
+            {
+                m_ucMessage.ShowDat(dat, thread.countobtained_count);
+
+                ChangePage(m_ucMessage, TrasitionType.Trasition_SlideLeft, Visibility.Visible, m_ucMessage.m_ButtonHomeVisibility);
+
+                //データを取得済みの場合は取得しない
+                if (thread.countobtained_count == thread.current_count) return;
+            }
+
+            System.Threading.Thread download_thread = new System.Threading.Thread(() =>
+            {
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    textStatus.Text = thread.Title + "を取得中・・・";
+                }));
+
+                try
+                {
+                    //メッセージをダウンロードする
+                    string url = m_CurrentBoard.Url + "dat/" + thread.Number;
+
+                    HttpWebRequest hwreq = (HttpWebRequest)(HttpWebRequest.Create(url));
+                    hwreq.UserAgent = "Monazilla";
+                    if (obtained_file_length != 0)
+                        hwreq.AddRange(obtained_file_length);
+                    WebResponse res = hwreq.GetResponse();
+
+                    //応答データをファイルに書き込む
+                    byte[] readData = new byte[1024];
+                    Stream strm = res.GetResponseStream();
+                    System.IO.MemoryStream ms = new System.IO.MemoryStream();
+
+                    for (;;)
+                    {
+                        //データを読み込む
+                        int readSize = strm.Read(readData, 0, readData.Length);
+                        if (readSize == 0)
+                        {
+                            //すべてのデータを読み込んだ時
+                            break;
+                        }
+                        //読み込んだデータをファイルに書き込む
+                        //sw.Write(readData, 0, readSize);
+                        ms.Write(readData, 0, readSize);
+                    }
+                    using (FileStream sw = new System.IO.FileStream(szFile, System.IO.FileMode.Append, System.IO.FileAccess.Write))
+                    {
+                        sw.Write(ms.ToArray(), 0, (int)ms.Length);
+                        sw.Close();
+                    }
+
+                    this.Dispatcher.Invoke((Action)(() =>
+                    {
+                        string downloaded_dat = Encoding.GetEncoding("Shift-JIS").GetString(ms.ToArray());
+                        if (dat == "" && m_ucMessage.get_rescount() == 0)
+                        {
+                            //初期取得の場合
+                            m_ucMessage.ShowDat(downloaded_dat, thread.countobtained_count);
+                        }
+                        else
+                        {
+                            //追加取得の場合
+                            m_ucMessage.InsertDat(downloaded_dat, m_ucMessage.get_rescount());
+                        }
+                    }));
+                }
+
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("OnShowMessage : Error => " + ex.Message);
+                }
+
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    textStatus.Text = "";
+                }));
+            });
+            download_thread.Start();
+        }
+
         #region ページ遷移処理
         void ChangePage(CBasePage dest, TrasitionType trasision,
             System.Windows.Visibility toolbar,
@@ -327,84 +518,7 @@ namespace _2chBrowser
         {
             try
             {
-                if(m_threadGetThread != null && m_threadGetThread.IsAlive)
-                {
-                    return;
-                }
-                m_threadGetThread = null;
-
-                //表示ボードを保持する
-                m_CurrentBoard = board;
-
-                Properties.Settings.Default.selected_board_category = board.Category;
-                Properties.Settings.Default.selected_board_name = board.Name;
-
-                //既読用データベースを開く
-                string szFile = GetLogDirectory(m_CurrentBoard) + "\\obtained.db";
-                m_ucThreadList.Load(szFile);
-
-                //スレッドファイル名を作成する
-                szFile = GetLogDirectory(m_CurrentBoard) + "\\subject.txt";
-
-                //スレッドを取得する
-                string threadListText = "";
-                string pastListText = "";
-
-                //過去のデータを読み込む
-                if (File.Exists(szFile))
-                {
-                    using (StreamReader sr = new StreamReader(szFile))
-                    {
-                        pastListText = sr.ReadToEnd();
-                        sr.Close();
-                    }
-                }
-
-                //取得済みスレッドを表示する
-                m_ucThreadList.SetThreadList(pastListText, "");
-
-                //ページを表示する
-                ChangePage(m_ucThreadList, TrasitionType.Trasition_SlideLeft, Visibility.Visible, m_ucThreadList.m_ButtonHomeVisibility);
-
-                m_threadGetThread = new System.Threading.Thread(() =>
-                {
-                    if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable() == true)
-                    {
-                        this.Dispatcher.Invoke((Action)(() =>
-                        {
-                            textStatus.Text = board.Name + "を取得中・・・";
-                        }));
-
-                        //Webから読み込む
-                        WebRequest wr = WebRequest.Create(board.Url + "subject.txt");
-                        WebResponse ws = wr.GetResponse();
-                        using (StreamReader sr = new StreamReader(ws.GetResponseStream(), Encoding.GetEncoding("Shift-Jis")))
-                        {
-                            threadListText = sr.ReadToEnd();
-                            sr.Close();
-                        }
-
-                        //スレッドを保存する
-                        using (StreamWriter sw = new System.IO.StreamWriter(szFile, false))
-                        {
-                            sw.Write(threadListText);
-                            sw.Close();
-                        }
-
-                        this.Dispatcher.Invoke((Action)(() =>
-                        {
-                            textStatus.Text = "";
-
-                            if (m_ucThreadList.SetThreadList(threadListText, pastListText) == false)
-                            {
-                                //throw new Exception("Can' read thread");
-                                //TODO:エラー表示を行う(Toast)
-                            }
-
-                        }));
-                    }
-                });
-                m_threadGetThread.Start();
+                UpdateThread(true, board);
             }
 
             catch (Exception ex)
@@ -416,105 +530,7 @@ namespace _2chBrowser
 
         private void OnShowMessage(Thread thread)
         {
-            string dat = "";
-            long obtained_file_length = 0;
-
-            //表示スレッドを保持する
-            m_CurrentThread = thread;
-            //ファイル名を作成する
-            string szFile = GetLogDirectory(m_CurrentBoard) + "\\" + thread.Number.ToString();
-
-            //過去のデータを読み込む
-            if (File.Exists(szFile))
-            {
-                FileInfo info = new FileInfo(szFile);
-                obtained_file_length = info.Length;
-
-                using (StreamReader sr = new StreamReader(szFile, Encoding.GetEncoding("Shift-jis")))
-                {
-                    dat = sr.ReadToEnd();
-                    sr.Close();
-                }
-            }
-
-            m_ucMessage.ShowDat(dat, thread.countobtained_count);
-
-            //ページを切り替える
-            ChangePage(m_ucMessage, TrasitionType.Trasition_SlideLeft, Visibility.Visible, m_ucMessage.m_ButtonHomeVisibility);
-
-            Debug.WriteLine(string.Format("OnShowMessage : countobtained_count = {0}, current_count={1}", thread.countobtained_count, thread.current_count));
-
-            //データを取得済みの場合は取得しない
-            if (thread.countobtained_count == thread.current_count) return;
-
-            System.Threading.Thread download_thread = new System.Threading.Thread(() =>
-            {
-                this.Dispatcher.Invoke((Action)(() =>
-                {
-                    textStatus.Text = thread.Title + "を取得中・・・";
-                }));
-
-                try
-                {
-                    //メッセージをダウンロードする
-                    string url = m_CurrentBoard.Url + "dat/" + thread.Number;
-
-                    HttpWebRequest hwreq = (HttpWebRequest)(HttpWebRequest.Create(url));
-                    hwreq.UserAgent = "Monazilla";
-                    if (obtained_file_length != 0)
-                        hwreq.AddRange(obtained_file_length);
-                    WebResponse res = hwreq.GetResponse();
-
-                    //応答データをファイルに書き込む
-                    byte[] readData = new byte[1024];
-                    Stream strm = res.GetResponseStream();
-                    System.IO.MemoryStream ms = new System.IO.MemoryStream();
-
-                    for (;;)
-                    {
-                        //データを読み込む
-                        int readSize = strm.Read(readData, 0, readData.Length);
-                        if (readSize == 0)
-                        {
-                            //すべてのデータを読み込んだ時
-                            break;
-                        }
-                        //読み込んだデータをファイルに書き込む
-                        //sw.Write(readData, 0, readSize);
-                        ms.Write(readData, 0, readSize);
-                    }
-                    using (FileStream sw = new System.IO.FileStream(szFile, System.IO.FileMode.Append, System.IO.FileAccess.Write))
-                    {
-                        sw.Write(ms.ToArray(), 0, (int)ms.Length);
-                        sw.Close();
-                    }
-
-                    this.Dispatcher.Invoke((Action)(() =>
-                    {
-                        string downloaded_dat = Encoding.GetEncoding("Shift-JIS").GetString(ms.ToArray());
-                        if(dat == "")
-                        {
-                            //メッセージを表示する
-                            m_ucMessage.ShowDat(dat + downloaded_dat, thread.countobtained_count);
-                        }
-                        else
-                        {
-                            m_ucMessage.InsertDat(downloaded_dat, thread.countobtained_count);
-                        }
-                    }));
-                }
-
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("OnShowMessage : Error => " + ex.Message);
-                }
-
-                this.Dispatcher.Invoke((Action)(() =>
-                {
-                    textStatus.Text = "";
-                }));
-            });
-            download_thread.Start();
+            UpdateMessage(true, thread);
         }
 
         void OnShowAbout()
@@ -616,11 +632,20 @@ namespace _2chBrowser
             }
             else if (m_CurrentPage == m_ucThreadList)
             {
+                try
+                {
+                    UpdateThread(false, m_CurrentBoard);
+                }
 
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("OnShowThread : [Error]" + ex.Message);
+                    MessageBox.Show(this, "スレッドの取得に失敗しました。");
+                }
             }
             else if (m_CurrentPage == m_ucMessage)
             {
-
+                UpdateMessage(false, m_CurrentThread);
             }
         }
 
