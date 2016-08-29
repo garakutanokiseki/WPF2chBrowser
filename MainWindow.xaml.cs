@@ -191,13 +191,22 @@ namespace _2chBrowser
             switch (Properties.Settings.Default.font_size)
             {
                 case 0:
-                    font_size = 18;
+                    font_size = 20;
                     break;
                 case 1:
+                    font_size = 18;
+                    break;
+                case 2:
                     font_size = 16;
                     break;
-                default:
+                case 3:
                     font_size = 12;
+                    break;
+                case 4:
+                    font_size = 10;
+                    break;
+                default:
+                    font_size = 16;
                     break;
             }
 

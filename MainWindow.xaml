@@ -340,9 +340,11 @@
                                 <StackPanel Orientation="Horizontal">
                                     <Label Width="{StaticResource label_menu_width}" Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="文字のサイズ" />
                                     <ComboBox Name="cmbFontSize" SelectedIndex="{Binding Path=font_size, Mode=TwoWay}" Width="{StaticResource combobox_menu_width}" FontSize="{DynamicResource fontsize}" SelectionChanged="cmbFontSize_SelectionChanged" >
-                                        <ComboBoxItem Content="大きい" />
-                                        <ComboBoxItem Content="普通" />
-                                        <ComboBoxItem Content="小さい" />
+                                        <ComboBoxItem Content="特大" />
+                                        <ComboBoxItem Content="大" />
+                                        <ComboBoxItem Content="中" />
+                                        <ComboBoxItem Content="小" />
+                                        <ComboBoxItem Content="極小" />
                                     </ComboBox>
                                 </StackPanel>
                             </ListBoxItem>
