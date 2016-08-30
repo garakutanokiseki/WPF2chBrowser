@@ -24,6 +24,9 @@
                 <ResourceDictionary Source="bot/TransitionLibrary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
+            <!--  コンバーター  -->
+            <local:threadSortTypeConverter x:Key="threadSortTypeConverter" />
+
             <!-- フォントサイズ -->
             <System:Double x:Key="fontsize">14</System:Double>
             <System:Double x:Key="label_menu_width">120</System:Double>
@@ -275,6 +278,19 @@
                         <Image Width="24" Source="images/Command-Refresh-32.png"/>
                     </StackPanel>
                 </Button>
+
+                <Menu Background="Transparent">
+                    <MenuItem Background="Transparent" DockPanel.Dock="Left" Margin="2" >
+                        <MenuItem.Header>
+                            <Image Width="24" Height="24" Source="images/Reverse-As-Sort-32.png" />
+                        </MenuItem.Header>
+
+                        <MenuItem Header="取得順" Name="menu_sort_normal" Click="menu_sort_normal_Click" IsChecked="{Binding Path=thread_sort_type, Converter={StaticResource threadSortTypeConverter}, ConverterParameter=normal, Mode=OneWay}"/>
+                        <MenuItem Header="新着順" Name="menu_sort_lastest" Click="menu_sort_lastest_Click" IsChecked="{Binding Path=thread_sort_type, Converter={StaticResource threadSortTypeConverter}, ConverterParameter=lastest, Mode=OneWay}"/>
+                        <MenuItem Header="タイトル名 - 昇順"  Name="menu_sort_title_up" Click="menu_sort_title_up_Click" IsChecked="{Binding Path=thread_sort_type, Converter={StaticResource threadSortTypeConverter}, ConverterParameter=title_up, Mode=OneWay}"/>
+                        <MenuItem Header="タイトル名 - 降順"  Name="menu_sort_title_down" Click="menu_sort_title_down_Click" IsChecked="{Binding Path=thread_sort_type, Converter={StaticResource threadSortTypeConverter}, ConverterParameter=title_down, Mode=OneWay}"/>
+                    </MenuItem>
+                </Menu>
             </DockPanel>
         </Grid>
 
@@ -323,38 +339,33 @@
 
                 <TabControl Width="{StaticResource panel_menu_width}" Background="{DynamicResource WindowBackgroundBrush}">
                     <TabItem Header="設定" FontSize="{DynamicResource fontsize}" Foreground="{DynamicResource TextBrush}" >
-                        <ListBox>
-                            <ListBoxItem>
-                                <Label Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="板設定" FontStyle="Italic" FontWeight="Bold" />
-                            </ListBoxItem>
-                            <ListBoxItem>
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Width="{StaticResource label_menu_width}" Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="メニューURL" />
-                                    <TextBox Name="textMenuUrl" Text="{Binding Path=bbs_menu_url, Mode=TwoWay}" Width="{StaticResource combobox_menu_width}" FontSize="{DynamicResource fontsize}"/>
-                                </StackPanel>
-                            </ListBoxItem>
-                            <ListBoxItem>
-                                <Label Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="外観設定" FontStyle="Italic" FontWeight="Bold" />
-                            </ListBoxItem>
-                            <ListBoxItem>
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Width="{StaticResource label_menu_width}" Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="文字のサイズ" />
-                                    <ComboBox Name="cmbFontSize" SelectedIndex="{Binding Path=font_size, Mode=TwoWay}" Width="{StaticResource combobox_menu_width}" FontSize="{DynamicResource fontsize}" SelectionChanged="cmbFontSize_SelectionChanged" >
-                                        <ComboBoxItem Content="特大" />
-                                        <ComboBoxItem Content="大" />
-                                        <ComboBoxItem Content="中" />
-                                        <ComboBoxItem Content="小" />
-                                        <ComboBoxItem Content="極小" />
-                                    </ComboBox>
-                                </StackPanel>
-                            </ListBoxItem>
-                            <ListBoxItem>
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Width="{StaticResource label_menu_width}" Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="テーマ" />
-                                    <ComboBox Name="cmbThemes" SelectedIndex="{Binding Path=theme, Mode=TwoWay}" Width="{StaticResource combobox_menu_width}" FontSize="{DynamicResource fontsize}" />
-                                </StackPanel>
-                            </ListBoxItem>
-                        </ListBox>
+                        <StackPanel Orientation="Vertical">
+                            <Label Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="板設定" FontStyle="Italic" FontWeight="Bold" />
+
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="{StaticResource label_menu_width}" Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="メニューURL" />
+                                <TextBox Name="textMenuUrl" Text="{Binding Path=bbs_menu_url, Mode=TwoWay}" Width="{StaticResource combobox_menu_width}" FontSize="{DynamicResource fontsize}"/>
+                            </StackPanel>
+                            
+                            <Label Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="外観設定" FontStyle="Italic" FontWeight="Bold" />
+                            
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="{StaticResource label_menu_width}" Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="文字のサイズ" />
+                                <ComboBox Name="cmbFontSize" SelectedIndex="{Binding Path=font_size, Mode=TwoWay}" Width="{StaticResource combobox_menu_width}" FontSize="{DynamicResource fontsize}" SelectionChanged="cmbFontSize_SelectionChanged" >
+                                    <ComboBoxItem Content="特大" />
+                                    <ComboBoxItem Content="大" />
+                                    <ComboBoxItem Content="中" />
+                                    <ComboBoxItem Content="小" />
+                                    <ComboBoxItem Content="極小" />
+                                </ComboBox>
+                            </StackPanel>
+                            
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="{StaticResource label_menu_width}" Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="テーマ" />
+                                <ComboBox Name="cmbThemes" SelectedIndex="{Binding Path=theme, Mode=TwoWay}" Width="{StaticResource combobox_menu_width}" FontSize="{DynamicResource fontsize}" />
+                            </StackPanel>
+                            
+                        </StackPanel>
                     </TabItem>
                 </TabControl>
             </DockPanel>

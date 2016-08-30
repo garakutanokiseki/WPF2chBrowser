@@ -153,5 +153,17 @@ namespace _2chBrowser.Properties {
                 this["selected_board_name"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int thread_sort_type {
+            get {
+                return ((int)(this["thread_sort_type"]));
+            }
+            set {
+                this["thread_sort_type"] = value;
+            }
+        }
     }
 }

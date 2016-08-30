@@ -41,12 +41,34 @@ namespace _2chBrowser
             string str_type = (string)parameter;
 
             if (status == 0 && str_type == "normal")return Visibility.Visible;
-            if (status == 1 && str_type == "new") return Visibility.Visible;
-            if (status == 2 && str_type == "up") return Visibility.Visible;
-            if (status == 3 && str_type == "down") return Visibility.Visible;
-            if (status == 4 && str_type == "read") return Visibility.Visible;
+            if (status == 3 && str_type == "new") return Visibility.Visible;
+            if (status == 4 && str_type == "up") return Visibility.Visible;
+            if (status == 1 && str_type == "down") return Visibility.Visible;
+            if (status == 2 && str_type == "read") return Visibility.Visible;
 
             return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    [ValueConversion(typeof(int), typeof(bool))]
+    public class threadSortTypeConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            int status = (int)value;
+            string str_type = (string)parameter;
+
+            if (status == 0 && str_type == "normal") return true;
+            if (status == 1 && str_type == "lastest") return true;
+            if (status == 2 && str_type == "title_up") return true;
+            if (status == 3 && str_type == "title_down") return true;
+
+            return false;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -21,7 +21,8 @@ namespace _2chBrowser
         //絞り込みフラグ
         public bool visible { set; get; }
 
-        //状態　0:通常、1:新規、2:更新あり、3:DAT落ち、4:既読
+        //(旧)状態　0:通常、1:新規、2:更新あり、3:DAT落ち、4:既読
+        //状態　0:通常、1:DAT落ち、2:既読、3:新規、4:更新あり
         private int _status = 0;
         public int status
         {

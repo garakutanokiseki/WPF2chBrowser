@@ -66,7 +66,7 @@ namespace _2chBrowser
             Debug.WriteLine("AddHistory_Base <End>");
         }
 
-        private void listThread_sort()
+        public void listThread_sort()
         {
             Debug.WriteLine("listThread_sort >>");
             foreach (Thread tread_data in listThread.Items)
@@ -92,9 +92,25 @@ namespace _2chBrowser
             //ソートする
             viewList.SortDescriptions.Clear();
 
-            //ソートする
+            //ソートする(検索分を先頭にする)
             viewList.SortDescriptions.Add(new SortDescription("visible", ListSortDirection.Descending));
-            viewList.SortDescriptions.Add(new SortDescription("Number", ListSortDirection.Descending));
+
+            switch (Properties.Settings.Default.thread_sort_type)
+            {
+                case 0://取得順
+                    viewList.SortDescriptions.Add(new SortDescription("Number", ListSortDirection.Descending));
+                    break;
+                case 1://新着順
+                    viewList.SortDescriptions.Add(new SortDescription("status", ListSortDirection.Descending));
+                    break;
+                case 2://名前 - 昇順
+                    viewList.SortDescriptions.Add(new SortDescription("Title", ListSortDirection.Ascending));
+                    break;
+                case 3://名前 - 降順
+                    viewList.SortDescriptions.Add(new SortDescription("Title", ListSortDirection.Descending));
+                    break;
+            }
+
 
             //ビューを更新する
             viewList.Refresh();
@@ -138,11 +154,11 @@ namespace _2chBrowser
                                 thread_data.countobtained_count = past.countobtained_count;
                                 if (past.countobtained_count < thread_data.current_count)
                                 {
-                                    thread_data.status = 2;
+                                    thread_data.status = 4;
                                 }
                                 else
                                 {
-                                    thread_data.status = 4;
+                                    thread_data.status = 2;
                                 }
                                 break;
                             }
@@ -195,7 +211,7 @@ namespace _2chBrowser
 
                         if (is_found == false)
                         {
-                            thread.status = 1;
+                            thread.status = 3;
                         }
                         else
                         {
@@ -271,7 +287,7 @@ namespace _2chBrowser
                 {
                     Thread data = GetData(reader);
                     data.is_exist_in_server = false;
-                    data.status = 3;
+                    data.status = 1;
                     m_listThread.Add(data);
                 }
 
@@ -507,7 +523,7 @@ namespace _2chBrowser
 
             m_EventHandler(MainWindow.EventID.ShowMessage, dat);
 
-            dat.status = 4;
+            dat.status = 2;
 
             foreach (Thread thread in m_listThread)
             {

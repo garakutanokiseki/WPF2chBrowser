@@ -242,6 +242,7 @@
     <Resource Include="images\read.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="images\Reverse-As-Sort-32.png" />
     <Content Include="new.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

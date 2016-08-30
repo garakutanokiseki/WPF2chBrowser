@@ -158,8 +158,11 @@ namespace _2chBrowser
             m_ucBoardList.SaveBoard(GetAppDataPath() + "boardlist.xml");
 
             //現在のスレッドを保存する
-            string szFile = GetLogDirectory(m_CurrentBoard) + "\\obtained.db";
-            m_ucThreadList.Save(szFile);
+            if(m_CurrentBoard != null)
+            {
+                string szFile = GetLogDirectory(m_CurrentBoard) + "\\obtained.db";
+                m_ucThreadList.Save(szFile);
+            }
 
             //ウインドウの位置を保存する
             WINDOWPLACEMENT wp = CUtilWindowRestore.Get(this);
@@ -359,6 +362,9 @@ namespace _2chBrowser
                 //データを取得済みの場合は取得しない
                 if (thread.countobtained_count == thread.current_count) return;
             }
+
+            //ネットワークに接続していない場合は取得しない
+            if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable() == false) return;
 
             System.Threading.Thread download_thread = new System.Threading.Thread(() =>
             {
@@ -668,5 +674,29 @@ namespace _2chBrowser
             m_ucThreadList.Resources["fontsize"] = font_size;
         }
         #endregion
+
+        private void menu_sort_normal_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.thread_sort_type = 0;
+            m_ucThreadList.listThread_sort();
+        }
+
+        private void menu_sort_lastest_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.thread_sort_type = 1;
+            m_ucThreadList.listThread_sort();
+        }
+
+        private void menu_sort_title_up_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.thread_sort_type = 2;
+            m_ucThreadList.listThread_sort();
+        }
+
+        private void menu_sort_title_down_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.thread_sort_type = 3;
+            m_ucThreadList.listThread_sort();
+        }
     }
 }
