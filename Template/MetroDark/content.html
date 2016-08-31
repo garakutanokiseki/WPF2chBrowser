@@ -1,8 +1,10 @@
 				#foreach($message in $messages)
 					<hr>
-					#if($message.is_new == true)
-					<img src="new.png">
-					#end
-					$message.rescount $message.name $message.mail $message.date<br><br>
-					$message.message
+					<div id="$message.rescount">
+						#if($message.is_new == true)
+						<img src="new.png">
+						#end
+						$message.rescount $message.name $message.mail $message.date<br><br>
+						$message.message
+					</div>
 				#end

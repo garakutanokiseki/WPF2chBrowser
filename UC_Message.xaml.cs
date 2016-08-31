@@ -62,15 +62,34 @@ namespace _2chBrowser
             List<MessageData> messages = new List<MessageData>();
 
             Regex regex = new Regex("((s?https?|ttp)://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+)");
+            Regex regex_page_ref = new Regex("<a (.*)>&gt;&gt;(\\d+)</a>");
 
             for (int i = 0; i < datElements.Length - 4; i = i + 4)
             {
                 MessageData message_data = new MessageData();
                 message_data.rescount = resCount.ToString();
+
                 message_data.name = i == 4 ? datElements[i].Split(new char[] { '\n' })[1] : datElements[i];//datElements[i];
+                message_data.name = Regex.Replace(message_data.name, "<.*?>", string.Empty);
+
                 message_data.mail = datElements[i + 1];
+                message_data.mail = Regex.Replace(message_data.mail, "<.*?>", string.Empty);
+
                 message_data.date = datElements[i + 2];
-                message_data.message = regex.Replace(datElements[i + 3], "<a href=\"$1\" target=\"_blank\">$1</a>");
+
+                string message = datElements[i + 3];
+
+                //ページ内参照の返還
+                MatchCollection mc = regex_page_ref.Matches(message);
+                foreach (Match m in mc)
+                {
+                    if (m.Groups.Count < 2) continue;
+                    string html = "<div id=\"def-html\" style=\"float: left;\" data-tooltip=\"#" + m.Groups[2] + "\">&gt;&gt;" + m.Groups[2] + "</div>";
+                    message = message.Replace(m.Value, html);
+                }
+
+                //外部リンクの変換
+                message_data.message = regex.Replace(message, "<a href=\"$1\" target=\"_blank\">$1</a>");
                 message_data.is_new = resCount > obtained_count ? true : false;
                 messages.Add(message_data);
 
@@ -87,8 +106,6 @@ namespace _2chBrowser
             m_velocityctx.Put("messages", messages);
 
             string template_file = ".\\Template\\" + m_themes[Properties.Settings.Default.theme] + "\\content.html";
-
-            Debug.WriteLine(template_file);
 
             System.IO.StringWriter resultWriter = new System.IO.StringWriter();
             Velocity.MergeTemplate(template_file, "UTF-8", m_velocityctx, resultWriter);
