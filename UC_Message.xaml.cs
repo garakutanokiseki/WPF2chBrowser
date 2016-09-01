@@ -123,7 +123,7 @@ namespace _2chBrowser
             string content;
 
             string basedirectory = System.IO.Directory.GetCurrentDirectory().Replace("\\", "/") + "/";
-            int font_size = 4 - Properties.Settings.Default.font_size;
+            int font_size = 5 - Properties.Settings.Default.font_size;
 
             m_resCount = 0;
 
