@@ -10,25 +10,26 @@
 		<link rel="stylesheet" href="./Template/common/js/darktooltip.css">
 		<script src="./Template/common/js/jquery.darktooltip.js"></script>
 
-		<script type="text/javascript">
+        <script type="text/javascript">
 			$(document).ready( function(){
-    	    $('[id=def-html]').darkTooltip({
-    		    opacity:1,
-    		    gravity:'west'
-                #if($font_size == 6)
-			        size:'xxlarge'
-                #elseif($font_size == 5)
-			        size:'xlarge'
-                #elseif($font_size == 4)
-			        size:'large'
-                #elseif($font_size == 3)
-			        size:'medium'
-                #else
-			        size:'small'
-                #end
-			    });
-		    });
-		</script>
+    	$('[id=def-html]').darkTooltip({
+    		opacity:1,
+    		gravity: 'west',
+            #if($font_size == 5)
+                size:'xxlarge'
+            #elseif($font_size == 4)
+                size:'xlarge'
+            #elseif($font_size == 3)
+                size:'large'
+            #elseif($font_size == 2)
+                size:'medium'
+            #else
+                size:'small'
+            #end
+
+    	});
+			});
+        </script>
 
 	</HEAD>
 	<BODY style="background-color : #FFFFFF">

@@ -84,7 +84,7 @@ namespace _2chBrowser
                 foreach (Match m in mc)
                 {
                     if (m.Groups.Count < 2) continue;
-                    string html = "<div id=\"def-html\" style=\"float: left;\" data-tooltip=\"#" + m.Groups[2] + "\">&gt;&gt;" + m.Groups[2] + "</div>";
+                    string html = "<div id=\"def-html\" style=\"float: left;color: #4169e1;\" data-tooltip=\"#" + m.Groups[2] + "\">&gt;&gt;" + m.Groups[2] + "</div>";
                     message = message.Replace(m.Value, html);
                 }
 
