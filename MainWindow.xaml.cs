@@ -360,7 +360,12 @@ namespace _2chBrowser
                 ChangePage(m_ucMessage, TrasitionType.Trasition_SlideLeft, Visibility.Visible, m_ucMessage.m_ButtonHomeVisibility);
 
                 //データを取得済みの場合は取得しない
-                if (thread.countobtained_count == thread.current_count) return;
+                if (thread.countobtained_count == thread.current_count)
+                {
+                    //ツールチップを設定する
+                    m_ucMessage.SetTooltipForRes();
+                    return;
+                }
             }
 
             //ネットワークに接続していない場合は取得しない
@@ -415,11 +420,13 @@ namespace _2chBrowser
                         {
                             //初期取得の場合
                             m_ucMessage.ShowDat(downloaded_dat, thread.countobtained_count);
+                            m_ucMessage.SetTooltipForRes();
                         }
                         else
                         {
                             //追加取得の場合
                             m_ucMessage.InsertDat(downloaded_dat, m_ucMessage.get_rescount());
+                            m_ucMessage.SetTooltipForRes();
                         }
                     }));
                 }

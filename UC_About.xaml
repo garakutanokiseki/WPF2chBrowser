@@ -31,6 +31,14 @@
                         </Hyperlink>
                     </Label>
                 </StackPanel>
+                <StackPanel Margin="4">
+                    <TextBlock Text="darktooltip" Foreground="{DynamicResource TextBrush}" />
+                    <Label>
+                        <Hyperlink NavigateUri="https://github.com/rubentd/darktooltip" Hyperlink.RequestNavigate="hyperlink_RequestNavigate">
+                            <TextBlock Foreground="#FF1EC315" Text="https://github.com/rubentd/darktooltip" />
+                        </Hyperlink>
+                    </Label>
+                </StackPanel>
             </StackPanel>
         </ScrollViewer>
     </Grid>

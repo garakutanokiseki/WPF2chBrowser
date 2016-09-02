@@ -30,6 +30,8 @@ namespace _2chBrowser
         string [] m_themes = WPF.Themes.ThemeManager.GetThemes();
 
         bool m_is_insert;
+        bool m_is_settooltip = false;
+        bool m_is_loadcompleted = false;
         string m_Inserttext = "";
         int m_resCount = 0;
 
@@ -49,12 +51,32 @@ namespace _2chBrowser
 
         private void Browser_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
-            if (m_is_insert == false) return;
+            Debug.WriteLine("Browser_LoadCompleted >>");
+
+            m_is_loadcompleted = true;
+
+            if (m_is_insert == false)
+            {
+                if(m_is_settooltip == true)
+                {
+                    SetTooltipForRes();
+                }
+                Debug.WriteLine("Browser_LoadCompleted << m_is_insert iis false");
+                return;
+            }
 
             AddTextToContent(m_Inserttext);
 
             m_is_insert = false;
             m_Inserttext = "";
+
+            if (m_is_settooltip == true)
+            {
+                SetTooltipForRes();
+                m_is_settooltip = false;
+            }
+
+            Debug.WriteLine("Browser_LoadCompleted <<");
         }
 
         private string CreateMessageList(string [] datElements,int resCount, int obtained_count)
@@ -122,6 +144,8 @@ namespace _2chBrowser
             string title;
             string content;
 
+            m_is_loadcompleted = false;
+
             string basedirectory = System.IO.Directory.GetCurrentDirectory().Replace("\\", "/") + "/";
             int font_size = 5 - Properties.Settings.Default.font_size;
 
@@ -129,7 +153,7 @@ namespace _2chBrowser
 
             if (dat == "")
             {
-                title = "メッセージが読み込めない。または、取得中です。";
+                title = "メッセージを取得しています。または、読み込めません。";
                 content = "";
 
             }
@@ -183,10 +207,26 @@ namespace _2chBrowser
             AddTextToContent(content);
         }
 
+        /// <summary>
+        /// レスにツールチップを設定する
+        /// </summary>
+        public void SetTooltipForRes()
+        {
+            Debug.WriteLine("SetTooltipForRes >>");
+            if (m_is_loadcompleted == false)
+            {
+                m_is_settooltip = true;
+                Debug.WriteLine("SetTooltipForRes << now loading html");
+                return;
+            }
+
+            browser.InvokeScript("set_tooltip");
+            Debug.WriteLine("SetTooltipForRes <<");
+        }
 
         private void AddTextToContent(string html)
         {
-            if(browser.IsLoaded == false)
+            if(m_is_loadcompleted == false)
             {
                 m_is_insert = true;
                 m_Inserttext = html;
