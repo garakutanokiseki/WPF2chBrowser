@@ -49,9 +49,23 @@ namespace _2chBrowser
             m_velocityctx = new VelocityContext();
         }
 
+        private void Browser_ScrollToID(string id)
+        {
+            MSHTML.HTMLDocument doc = (MSHTML.HTMLDocument)browser.Document;
+            var element_content = doc.getElementById(id);
+
+            if (element_content != null)
+            {
+                element_content.scrollIntoView(true);
+            }
+        }
+
         private void Browser_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
             Debug.WriteLine("Browser_LoadCompleted >>");
+
+            Debug.WriteLine("Browser_LoadCompleted m_resCount = " + m_resCount.ToString());
+            Browser_ScrollToID(m_resCount.ToString());
 
             m_is_loadcompleted = true;
 
