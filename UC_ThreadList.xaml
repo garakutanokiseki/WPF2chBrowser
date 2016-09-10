@@ -43,7 +43,7 @@
     <DockPanel>
         <DockPanel DockPanel.Dock="Top">
             <Button x:Name="btnDeleteNarrowingWord" DockPanel.Dock="Right" Width="24" Click="btnDeleteNarrowingWord_Click" Content="×"/>
-            <ComboBox x:Name="cmdNarrowingWord" IsEditable="True" KeyDown="cmdNarrowingWord_KeyDown" SelectionChanged="cmdNarrowingWord_SelectionChanged" />
+            <ComboBox x:Name="cmdNarrowingWord" FontSize="{DynamicResource fontsize}" IsEditable="True" KeyDown="cmdNarrowingWord_KeyDown" SelectionChanged="cmdNarrowingWord_SelectionChanged" />
         </DockPanel>
         <ListBox Name="listThread"
                  ItemTemplate="{StaticResource listDataFile}"

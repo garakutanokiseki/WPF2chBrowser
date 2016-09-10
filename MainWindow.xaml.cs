@@ -689,7 +689,6 @@ namespace _2chBrowser
             m_ucBoardList.Resources["fontsize"] = font_size;
             m_ucThreadList.Resources["fontsize"] = font_size;
         }
-        #endregion
 
         private void menu_sort_normal_Click(object sender, RoutedEventArgs e)
         {
@@ -714,5 +713,6 @@ namespace _2chBrowser
             Properties.Settings.Default.thread_sort_type = 3;
             m_ucThreadList.listThread_sort();
         }
+        #endregion
     }
 }
