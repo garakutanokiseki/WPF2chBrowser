@@ -1,10 +1,9 @@
 				#foreach($message in $messages)
-					<hr>
-					<div id="$message.rescount">
+					<tr id="$message.rescount"><td>
 						#if($message.is_new == true)
 						<img src="new.png">
 						#end
 						$message.rescount $message.name $message.mail $message.date<br><br>
 						$message.message
-					</div>
+					</tr></td>
 				#end

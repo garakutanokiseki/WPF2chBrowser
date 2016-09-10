@@ -3,12 +3,21 @@
 	<HEAD>
 		<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<base href="file:///${basedirectory}" />
-
 		<script src="./Template/common/js/jquery-1.12.4.min.js"></script>
 		<link rel="stylesheet" href="./Template/common/css/reset.css">
 		<link rel="stylesheet" href="./Template/common/css/examples.css">
 		<link rel="stylesheet" href="./Template/common/js/darktooltip.css">
+		<link href="./Template/common/css/bootstrap.min.css" rel="stylesheet">
+
 		<script src="./Template/common/js/jquery.darktooltip.js"></script>
+		<script src="./Template/common/js/jquery.quicksearch.min.js"></script>
+		<script type="text/javascript" src="./Template/common/js/bootstrap.min.js"></script>
+		
+		<style type="text/css">
+			body {
+				padding-top: 60px;
+			}
+		</style>
 
 		<script type="text/javascript">
 			//ツールチップを設定する
@@ -29,17 +38,42 @@
 						size:'small'
 						#end
 					});
+					
+					$('input#search').quicksearch('table tbody tr');
 				});
 			}
 		</script>
 
 	</HEAD>
 	<BODY style="background-color:#181818;">
-		<font face="ＭＳ ゴシック" color="#BABABA" size="$font_size">
-			<H2>$title</H2>
-			<div id="content">
-				$content
+		<!-- navi bar-->
+		<nav class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#">$title</a>
 			</div>
-		</font>
+
+			<div class="navbar-collapse">
+				<form class="navbar-form navbar-right" role="search" action="#">
+					<div class="form-group">
+						<div class="input-group">
+							<input id="search" type="text" class="form-control" placeholder="検索">
+						</div>
+					</div>
+				</form>
+			</div><!-- /.navbar-collapse -->
+		</nav>
+
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-12 col-lg-12">
+					<font face="ＭＳ ゴシック" color="#BABABA" size="$font_size">
+					<table class="table"><tbody id="content">
+						$content
+					</tbody><table>
+					</font>
+				</div>
+			</div>
+		</div>
 	</BODY>
 </HTML>

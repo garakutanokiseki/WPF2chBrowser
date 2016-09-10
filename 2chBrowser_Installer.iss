@@ -22,6 +22,10 @@ SolidCompression=Yes
 Name: english; MessagesFile: compiler:Default.isl
 Name: japanese; MessagesFile: compiler:Languages\Japanese.isl
 
+[Registry]
+Root: "HKLM32"; Subkey: "SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION"; ValueType: dword; ValueName: "2chBrowser.exe"; ValueData: "0x2af8"
+Root: "HKLM64"; Subkey: "SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION"; ValueType: dword; ValueName: "2chBrowser.exe"; ValueData: "0x2af8"
+
 [Code]
 
 [Tasks]
