@@ -6,25 +6,24 @@
 #define MyAppExeName "2chBrowser.exe"
 
 [Setup]
-BackColorDirection=lefttoright
-BackColor2=$00F8A57C
 BackColor=$00FC7745
 AppName={#MyAppName}
 AppId=garakuta_2chlikebbsBrowser
 AppVerName={#MyAppVerName}
-AppVersion=0.0.1.20160902
+AppVersion=0.0.1.20160911
+ArchitecturesInstallIn64BitMode=x64
 DefaultDirName={pf}\2chlikebbsBrowser
 DefaultGroupName={#MyAppName}
 OutputBaseFilename=2chlikebbsBrowser_setup
 SolidCompression=Yes
+MinVersion=0,6.1
 
 [Languages]
 Name: english; MessagesFile: compiler:Default.isl
 Name: japanese; MessagesFile: compiler:Languages\Japanese.isl
 
 [Registry]
-Root: "HKLM32"; Subkey: "SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION"; ValueType: dword; ValueName: "2chBrowser.exe"; ValueData: "0x2af8"
-Root: "HKLM64"; Subkey: "SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION"; ValueType: dword; ValueName: "2chBrowser.exe"; ValueData: "0x2af8"
+Root: "HKLM"; Subkey: "SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION"; ValueType: dword; ValueName: "2chBrowser.exe"; ValueData: "0x2af8"; Flags: uninsdeletevalue
 
 [Code]
 
