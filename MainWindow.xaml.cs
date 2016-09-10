@@ -355,8 +355,16 @@ namespace _2chBrowser
             //ページを切り替える
             if(is_show_message_page == true)
             {
+                //メッセージを表示する
                 m_ucMessage.ShowDat(dat, thread.countobtained_count);
 
+                //取得済みのメッセージまでスクロールする
+                if (thread.countobtained_count > 0)
+                {
+                    m_ucMessage.Browser_ScrollToID(thread.countobtained_count.ToString());
+                }
+
+                //ページを切り替える
                 ChangePage(m_ucMessage, TrasitionType.Trasition_SlideLeft, Visibility.Visible, m_ucMessage.m_ButtonHomeVisibility);
 
                 //データを取得済みの場合は取得しない
@@ -364,6 +372,7 @@ namespace _2chBrowser
                 {
                     //ツールチップを設定する
                     m_ucMessage.SetTooltipForRes();
+
                     return;
                 }
             }

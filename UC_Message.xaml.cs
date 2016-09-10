@@ -31,8 +31,10 @@ namespace _2chBrowser
 
         bool m_is_insert;
         bool m_is_settooltip = false;
+        bool m_is_scroll = false;
         bool m_is_loadcompleted = false;
         string m_Inserttext = "";
+        string m_scroll_id = "";
         int m_resCount = 0;
 
         public UC_Message()
@@ -49,8 +51,22 @@ namespace _2chBrowser
             m_velocityctx = new VelocityContext();
         }
 
-        private void Browser_ScrollToID(string id)
+        public void Browser_ScrollToID(string id)
         {
+            Debug.WriteLine("Browser_ScrollToID >> id = " + id);
+
+            if (m_is_loadcompleted == false)
+            {
+                m_is_scroll = true;
+                m_scroll_id = id;
+
+                Debug.WriteLine("Browser_ScrollToID << not completed");
+                return;
+            }
+
+            m_is_scroll = false;
+            m_scroll_id = "";
+
             MSHTML.HTMLDocument doc = (MSHTML.HTMLDocument)browser.Document;
             var element_content = doc.getElementById(id);
 
@@ -58,16 +74,19 @@ namespace _2chBrowser
             {
                 element_content.scrollIntoView(true);
             }
+            Debug.WriteLine("Browser_ScrollToID <<");
         }
 
         private void Browser_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
             Debug.WriteLine("Browser_LoadCompleted >>");
 
-            Debug.WriteLine("Browser_LoadCompleted m_resCount = " + m_resCount.ToString());
-            Browser_ScrollToID(m_resCount.ToString());
-
             m_is_loadcompleted = true;
+
+            if (m_is_scroll == true)
+            {
+                Browser_ScrollToID(m_scroll_id);
+            }
 
             if (m_is_insert == false)
             {
