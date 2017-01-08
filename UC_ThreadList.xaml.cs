@@ -2,19 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Net;
-using System.IO;
 using System.Diagnostics;
 using System.ComponentModel;
 using Community.CsharpSqlite.SQLiteClient;
@@ -69,14 +59,19 @@ namespace _2chBrowser
         public void listThread_sort()
         {
             Debug.WriteLine("listThread_sort >>");
+
+            string narrowingWord = "";
+            if(cmdNarrowingWord.Text != null)
+                narrowingWord = cmdNarrowingWord.Text.ToLower();
+
             foreach (Thread tread_data in listThread.Items)
             {
-                if (cmdNarrowingWord.Text == null || cmdNarrowingWord.Text == "")
+                if (narrowingWord == "")
                 {
                     tread_data.visible = false;
                     continue;
                 }
-                if (tread_data.Title.IndexOf(cmdNarrowingWord.Text) >= 0)
+                if (tread_data.Title.ToLower().IndexOf(narrowingWord) >= 0)
                 {
                     tread_data.visible = true;
                 }
@@ -128,7 +123,7 @@ namespace _2chBrowser
                     Thread thread_data = new Thread();
 
                     thread_data.Number = tmp[0];
-                    thread_data.Title = tmp[1];
+                    thread_data.Title = System.Net.WebUtility.HtmlDecode(tmp[1]);
                     thread_data.nID = -1;
                     thread_data.visible = false;
                     thread_data.status = 0;
@@ -413,7 +408,7 @@ namespace _2chBrowser
 
             dat.Number = GetStringFromSQL(reader, "Number");
             dat.countobtained_count = GetIntFromSQL(reader, "countobtained_count");
-            dat.Title = GetStringFromSQL(reader, "Title");
+            dat.Title = System.Net.WebUtility.HtmlDecode(GetStringFromSQL(reader, "Title"));
             dat.nID = GetIntFromSQL(reader, "ID");
 
             return dat;
