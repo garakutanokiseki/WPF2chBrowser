@@ -131,7 +131,7 @@ namespace _2chBrowser
                 m_ucThreadList.cmdNarrowingWord.Items.Add(Properties.Settings.Default.NarrowingWord4);
 
             //板一覧を読み込む
-            if(m_ucBoardList.LoadBoardfromFile(GetAppDataPath() + "boardlist.xml") == false)
+            if(m_ucBoardList.LoadBoardfromFile(GetAppDataPath() + "\\boardlist.xml") == false)
             {
                 //ファイルが無い場合は、指定URLから読み込む
                 m_ucBoardList.LoadBoardList(Properties.Settings.Default.bbs_menu_url);
@@ -155,7 +155,7 @@ namespace _2chBrowser
             }
 
             //板一覧を保存する
-            m_ucBoardList.SaveBoard(GetAppDataPath() + "boardlist.xml");
+            m_ucBoardList.SaveBoard(GetAppDataPath() + "\\boardlist.xml");
 
             //現在のスレッドを保存する
             if(m_CurrentBoard != null)
