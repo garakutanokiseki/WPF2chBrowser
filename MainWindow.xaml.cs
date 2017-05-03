@@ -574,6 +574,9 @@ namespace _2chBrowser
                 btnBack.Visibility = System.Windows.Visibility.Visible;
                 btnBack.IsEnabled = true;
                 btnMenu.Visibility = System.Windows.Visibility.Collapsed;
+
+                //メニューの選択を外す
+                listMenu.SelectedIndex = -1;
             }
         }
         #endregion
