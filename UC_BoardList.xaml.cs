@@ -27,11 +27,7 @@ namespace _2chBrowser
             m_ButtonHomeVisibility = Visibility.Collapsed;
         }
 
-        private void listFolderItem_MouseDoubleClick(object sender, RoutedEventArgs e)
-        {
-            //TreeViewItem item = (TreeViewItem)sender;
-            //Board dat = item.DataContext as Board;
-
+        private void ProccessItemSelect(object sender, RoutedEventArgs e) {
             TreeViewItem item = (TreeViewItem)listFolder.SelectedItem;
             if (item == null) return;
             Board dat = item.DataContext as Board;
@@ -41,6 +37,20 @@ namespace _2chBrowser
             if (dat.Url == "") return;
 
             m_EventHandler(MainWindow.EventID.ShowThread, dat);
+        }
+
+        private void listFolderItem_MouseLeftButtonUp(object sender, RoutedEventArgs e)
+        {
+            if (Properties.Settings.Default.mouse_click != 0) return;
+
+            ProccessItemSelect(sender, e);
+        }
+
+        private void listFolderItem_MouseDoubleClick(object sender, RoutedEventArgs e)
+        {
+            if (Properties.Settings.Default.mouse_click != 1) return;
+
+            ProccessItemSelect(sender, e);
         }
 
         public void LoadBoardList(string url)

@@ -8,6 +8,8 @@ using NVelocity.App;
 using NVelocity.Exception;
 using System.Diagnostics;
 
+using mshtml;
+
 namespace _2chBrowser
 {
     class MessageData
@@ -67,7 +69,7 @@ namespace _2chBrowser
             m_is_scroll = false;
             m_scroll_id = "";
 
-            MSHTML.HTMLDocument doc = (MSHTML.HTMLDocument)browser.Document;
+            mshtml.HTMLDocument doc = (mshtml.HTMLDocument)browser.Document;
             var element_content = doc.getElementById(id);
 
             if (element_content != null)
@@ -266,7 +268,7 @@ namespace _2chBrowser
                 return;
             }
 
-            MSHTML.HTMLDocument doc = (MSHTML.HTMLDocument)browser.Document;
+            mshtml.HTMLDocument doc = (mshtml.HTMLDocument)browser.Document;
             var element_content = doc.getElementById("content");
 
             if(element_content == null)

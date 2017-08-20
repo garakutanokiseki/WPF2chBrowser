@@ -10,13 +10,13 @@ BackColor=$00FC7745
 AppName={#MyAppName}
 AppId=garakuta_2chlikebbsBrowser
 AppVerName={#MyAppVerName}
-AppVersion=0.0.1.20170107
+AppVersion=0.0.1.20170120
 ArchitecturesInstallIn64BitMode=x64
 DefaultDirName={pf}\2chlikebbsBrowser
 DefaultGroupName={#MyAppName}
 OutputBaseFilename=2chlikebbsBrowser_setup
 SolidCompression=Yes
-MinVersion=0,6.1
+MinVersion=0,5.1
 
 [Languages]
 Name: english; MessagesFile: compiler:Default.isl

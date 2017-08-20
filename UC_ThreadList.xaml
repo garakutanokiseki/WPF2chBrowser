@@ -35,6 +35,7 @@
         <!-- リストボックス-スタイル -->
         <Style x:Key="listStyleDataFile" TargetType="ListBoxItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <EventSetter Event="MouseLeftButtonUp" Handler="listFolderItem_MouseLeftButtonUp"/>
             <EventSetter Event="MouseDoubleClick" Handler="listFolderItem_MouseDoubleClick"/>
         </Style>
 

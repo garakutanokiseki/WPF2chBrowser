@@ -46,7 +46,8 @@
                 </Style>
 
                 <Style TargetType="{x:Type TreeViewItem}">
-		            <EventSetter Event="MouseDoubleClick" Handler="listFolderItem_MouseDoubleClick"/>
+                    <EventSetter Event="MouseLeftButtonUp" Handler="listFolderItem_MouseLeftButtonUp"/>
+                    <EventSetter Event="MouseDoubleClick" Handler="listFolderItem_MouseDoubleClick"/>
                     <Setter Property="HeaderTemplate">
                         <Setter.Value>
                             <DataTemplate>

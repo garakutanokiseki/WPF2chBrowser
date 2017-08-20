@@ -347,6 +347,15 @@
                                 <TextBox Name="textMenuUrl" Text="{Binding Path=bbs_menu_url, Mode=TwoWay}" Width="{StaticResource combobox_menu_width}" FontSize="{DynamicResource fontsize}"/>
                             </StackPanel>
                             
+                            <Label Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="マウス設定" FontStyle="Italic" FontWeight="Bold" />
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="{StaticResource label_menu_width}" Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="クリック操作" />
+                                <ComboBox Name="cmbMouseClick" SelectedIndex="{Binding Path=mouse_click, Mode=TwoWay}" Width="{StaticResource combobox_menu_width}" FontSize="{DynamicResource fontsize}" >
+                                    <ComboBoxItem Content="シングルクリック" />
+                                    <ComboBoxItem Content="ダブルクリック" />
+                                </ComboBox>
+                            </StackPanel>
+
                             <Label Foreground="{DynamicResource TextBrush}" FontSize="{DynamicResource fontsize}" Content="外観設定" FontStyle="Italic" FontWeight="Bold" />
                             
                             <StackPanel Orientation="Horizontal">

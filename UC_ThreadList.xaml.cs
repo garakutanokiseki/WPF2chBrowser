@@ -497,7 +497,7 @@ namespace _2chBrowser
         #endregion
 
         #region イベントハンドラ
-        private void listFolderItem_MouseDoubleClick(object sender, RoutedEventArgs e)
+        private void ProccessItemSelect(object sender, RoutedEventArgs e)
         {
             Thread dat = ((ListBoxItem)sender).DataContext as Thread;
 
@@ -528,6 +528,20 @@ namespace _2chBrowser
                     break;
                 }
             }
+        }
+
+        private void listFolderItem_MouseLeftButtonUp(object sender, RoutedEventArgs e)
+        {
+            if (Properties.Settings.Default.mouse_click != 0) return;
+
+            ProccessItemSelect(sender, e);
+        }
+
+        private void listFolderItem_MouseDoubleClick(object sender, RoutedEventArgs e)
+        {
+            if (Properties.Settings.Default.mouse_click != 1) return;
+
+            ProccessItemSelect(sender, e);
         }
 
         private void cmdNarrowingWord_KeyDown(object sender, KeyEventArgs e)
